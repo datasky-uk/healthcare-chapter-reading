@@ -1,12 +1,12 @@
 # Chapter reading tracker
 
-A shared web page where the chapter's co-readers claim papers and write structured notes. Each essential read gets two readers, and every other paper gets one. The page runs on GitHub Pages and stores its data in Supabase (free tier). Collaborators sign in with a one-time link emailed to them, so they need no passwords and no accounts elsewhere.
+A shared web page where the chapter's co-readers claim papers, write structured notes, add papers the list is missing and share documents. Each essential read gets two readers, and every other paper gets one. The page runs on GitHub Pages and stores its data in Supabase (free tier). Collaborators sign in with a one-time link emailed to them, so they need no passwords and no accounts elsewhere.
 
 ## Set up (once)
 
 1. **Supabase.**
    - Create a free project at supabase.com.
-   - In *SQL Editor*, paste and run `supabase/schema.sql`.
+   - In *SQL Editor*, paste and run `supabase/schema.sql`, then `supabase/002_added_papers_and_materials.sql`. Both are safe to re-run.
    - In *Authentication → Sign In / Providers*, turn **off** "Allow new users to sign up", so only invited people can sign in.
    - In *Authentication → URL Configuration*, set the Site URL to the tracker address from step 3 and add it to the redirect URLs.
    - **Set up email delivery.** Supabase's built-in sender only delivers to your own project team's addresses, and only a few emails an hour, so it can't reach external collaborators. In *Authentication → Emails → SMTP Settings*, connect a sending service. Your institution's SMTP server works, or a free tier from Resend or Brevo. Then raise the email limit in *Authentication → Rate Limits*.
@@ -22,7 +22,8 @@ A shared web page where the chapter's co-readers claim papers and write structur
    git push                           # GitHub Actions publishes web/ to Pages
    ```
    In the GitHub repo, set *Settings → Pages → Source* to "GitHub Actions".
-4. **Invite people.**
+4. **Add the chapter documents** to the *Materials* page (see below).
+5. **Invite people.**
    ```
    python3 scripts/invite.py alice@uni.edu bob@inst.org
    ```
@@ -33,7 +34,23 @@ A shared web page where the chapter's co-readers claim papers and write structur
 - **Adding a paper:** add it to `../chapter_outline_and_literature.md`, then run `build_references.py`, `oa_lookup.py` and `seed.py`.
   - Existing papers keep their ids, matched by DOI or citation, so claims and notes stay attached.
   - `seed.py` removes papers dropped from the bibliography, but only if nobody has claimed or noted them. It warns about the rest.
-- **Reader suggestions:** the "Suggest" tab collects papers readers propose. Mark each one added or declined in the Supabase table editor.
+- **Papers added by readers:** any reader can add a paper from *Add a paper*. Pasting a DOI fills in the details from OpenAlex or Crossref. The paper then appears in everyone's list, marked "added".
+  - The person who added a paper can edit it, and can remove it until someone else claims it or writes a note on it.
+  - Ranks stay yours: readers can't give a paper a rank.
+  - `export_notes.py` lists these papers separately, so you can move the good ones into `chapter_outline_and_literature.md`.
+  - When a paper a reader added appears in the bibliography, `seed.py` takes over that entry, keeping its claims and notes. `seed.py` never deletes papers readers added.
+- **Materials:** the *Materials* page has your chapter documents at the top, then anything readers share (files up to 50 MB, or links).
+  - Files sit in a private Supabase Storage bucket. Only signed-in readers can open them, through links that expire after 10 minutes.
+  - Readers can remove only what they shared themselves.
+  - To add or update your own documents:
+    ```
+    python3 scripts/add_material.py ../materials/AI_in_Healthcare_chapter_plan_and_literature.pdf \
+        --title "Chapter plan: abstract, outline and literature" --description "Start here." --order 1
+    python3 scripts/add_material.py --link https://docs.google.com/... --title "Shared draft" --order 5
+    python3 scripts/add_material.py --list
+    python3 scripts/add_material.py --remove ID
+    ```
+    Uploading a file with the same name again replaces it.
 
 ## Full texts
 
@@ -43,6 +60,7 @@ A shared web page where the chapter's co-readers claim papers and write structur
 
 ## Data and privacy
 
-- The tracker stores readers' names, institutions, email addresses (held by Supabase Auth), claims and notes.
+- The tracker stores readers' names, institutions, email addresses (held by Supabase Auth), claims, notes, the papers they add and the files they share.
 - Only signed-in, invited readers can see any of it. Each reader can change only their own claims and notes.
-- The paper list itself can be changed only with the service key.
+- The bibliography papers can be changed only with the service key. Readers can change only the papers they added and the materials they shared.
+- **DOI lookups:** when a reader looks up a DOI, their browser sends that DOI to OpenAlex and Crossref, which are public bibliographic databases. Nothing else is sent.

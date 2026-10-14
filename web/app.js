@@ -31,9 +31,9 @@
 
   const state = {
     sb: null, session: null, me: null,
-    papers: [], claims: [], notes: [], readers: [], suggestions: [],
+    papers: [], claims: [], notes: [], readers: [], materials: [],
     filters: { q: '', section: '', tag: 'ranked', status: '', access: '' },
-    openPaperId: null, channel: null,
+    openPaperId: null, editPaperId: null, channel: null,
   };
 
   /* ---------- small helpers ---------- */
@@ -56,7 +56,10 @@
     return el;
   }
 
+  function currentView() { return (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0]; }
+
   function mount(...nodes) {
+    app.dataset.view = currentView(); // lets live updates know which view is on screen
     app.replaceChildren(...nodes);
   }
 
@@ -97,6 +100,9 @@
   function friendlyError(error) {
     const msg = (error && (error.message || error.error_description)) || String(error);
     if (/all its readers/i.test(msg)) return 'Someone just claimed the last reader slot for this paper.';
+    if (/papers_doi_unique/i.test(msg)) return 'A paper with this DOI is already in the list.';
+    if (/mime type/i.test(msg)) return 'That file type is not accepted here.';
+    if (/maximum allowed size|too large/i.test(msg)) return 'Files can be up to 50 MB.';
     if (/duplicate key/i.test(msg)) return 'You have already claimed this paper.';
     if (/JWT|session/i.test(msg)) return 'Your session expired. Please sign in again.';
     if (/after \d+ seconds/i.test(msg)) return 'A link was sent to this address moments ago. Please wait a minute and try again.';
@@ -106,16 +112,20 @@
 
   /* ---------- data ---------- */
 
+  const TABLES = ['papers', 'claims', 'notes', 'readers', 'materials'];
+
   async function loadTable(table) {
     const { data, error } = await state.sb.from(table).select('*');
     if (error) throw error;
     state[table] = data;
+    if (table === 'papers') {
+      state.papers.sort((a, b) => (a.rank || 999) - (b.rank || 999) || a.section - b.section
+        || shortCite(a).localeCompare(shortCite(b)));
+    }
   }
 
   async function loadAll() {
-    await Promise.all(['papers', 'claims', 'notes', 'readers', 'suggestions'].map(loadTable));
-    state.papers.sort((a, b) => (a.rank || 999) - (b.rank || 999) || a.section - b.section
-      || shortCite(a).localeCompare(shortCite(b)));
+    await Promise.all(TABLES.map(loadTable));
     state.me = state.readers.find((r) => r.user_id === uid()) || null;
   }
 
@@ -136,13 +146,14 @@
       }, 400);
     };
     state.channel = state.sb.channel('tracker');
-    for (const table of ['claims', 'notes', 'readers', 'suggestions']) {
+    for (const table of TABLES) {
       state.channel.on('postgres_changes', { event: '*', schema: 'public', table }, onChange);
     }
     state.channel.subscribe();
   }
 
   function rerender() {
+    if (dialog.open && state.openPaperId && !paperById(state.openPaperId)) dialog.close();
     route(true);
     if (dialog.open && state.openPaperId) refreshDialogLive();
   }
@@ -214,10 +225,10 @@
   function paperRow(p) {
     return h('article', { class: 'paper-row' },
       h('div', { class: 'paper-rank' }, p.rank ? `#${p.rank}` : `§${p.section}`,
-        h('span', { class: 'small' }, p.rank ? `§${p.section}` : 'ref')),
+        h('span', { class: 'small' }, p.rank ? `§${p.section}` : p.added_by ? 'added' : 'ref')),
       h('div', {},
         h('button', { class: 'paper-title', type: 'button', onclick: () => openPaper(p.id) }, p.title || shortCite(p)),
-        h('p', { class: 'paper-meta' }, `${shortCite(p)} · ${SECTIONS[p.section]}`),
+        h('p', { class: 'paper-meta' }, `${shortCite(p)} · ${SECTIONS[p.section]}${p.added_by ? ` · added by ${p.added_by === uid() ? 'you' : readerName(p.added_by)}` : ''}`),
         p.why_read ? h('p', { class: 'paper-meta' }, p.why_read) : null,
         h('div', { class: 'paper-badges' }, tagPill(p), accessBadge(p), flagBadges(p))),
       h('div', { class: 'paper-side' }, h('div', { class: 'readers' }, readerChips(p)), claimButton(p)));
@@ -324,6 +335,7 @@
     const mine = state.claims.filter((c) => c.user_id === uid());
 
     const needsReaders = ranked.filter((p) => claimsFor(p.id).length < need(p)).slice(0, 12);
+    const added = state.papers.filter((p) => p.added_by).sort((a, b) => b.created_at.localeCompare(a.created_at));
     const toCheck = state.papers.filter((p) => p.check_notes && p.check_notes.length
       && !notesFor(p.id).some((n) => n.numbers_verified));
 
@@ -360,6 +372,14 @@
           h('a', { href: '#/papers', onclick: () => { state.filters.status = 'open'; state.filters.tag = 'ranked'; } }, 'See all')),
         needsReaders.length ? h('div', { class: 'paper-list' }, needsReaders.map(paperRow))
           : h('p', { class: 'empty' }, 'Every ranked paper has its readers.')),
+      h('section', { class: 'stack' },
+        h('div', { class: 'section-head' },
+          h('h2', {}, `Added by readers (${added.length})`),
+          h('div', { class: 'row' },
+            added.length > 6 ? h('a', { href: '#/papers', onclick: () => { state.filters.tag = 'added'; state.filters.status = ''; } }, 'See all') : null,
+            h('a', { class: 'btn btn-small', href: '#/add' }, 'Add a paper'))),
+        added.length ? h('div', { class: 'paper-list' }, added.slice(0, 6).map(paperRow))
+          : h('p', { class: 'empty' }, 'Found something the list is missing? Add it and it appears here for everyone.')),
       h('section', { class: 'card stack' },
         h('h2', {}, 'By chapter section'),
         h('div', { class: 'table-wrap' }, h('table', {},
@@ -382,7 +402,8 @@
     return state.papers.filter((p) => {
       if (f.section && String(p.section) !== f.section) return false;
       if (f.tag === 'ranked' && !p.rank) return false;
-      if (f.tag && f.tag !== 'ranked' && p.tag !== f.tag) return false;
+      if (f.tag === 'added' && !p.added_by) return false;
+      if (f.tag && f.tag !== 'ranked' && f.tag !== 'added' && p.tag !== f.tag) return false;
       if (f.access === 'oa' && !p.is_oa) return false;
       if (f.access === 'closed' && p.is_oa) return false;
       if (f.status) {
@@ -423,11 +444,14 @@
     listHost = h('div', { class: 'paper-list' });
     countHost = h('p', { class: 'muted small', role: 'status' });
     mount(h('div', { class: 'stack' },
-      h('div', { class: 'section-head' }, h('h1', {}, 'Papers'), countHost),
+      h('div', { class: 'section-head' }, h('h1', {}, 'Papers'),
+        h('div', { class: 'row' }, countHost, h('a', { class: 'btn btn-small', href: '#/add' }, 'Add a paper'))),
       h('div', { class: 'filters' },
         h('div', { class: 'search' }, search),
         select('f-section', 'Chapter section', [['', 'All sections'], ...Object.entries(SECTIONS).filter(([s]) => state.papers.some((p) => String(p.section) === s)).map(([s, t]) => [s, `§${s} ${t}`])], 'section'),
-        select('f-tag', 'Tag', [['ranked', 'Ranked (53)'], ['', 'All 204'], ['essential', 'Essential read'], ['should', 'Should read'], ['mildly', 'Mildly interesting'], ['reference', 'Other references']], 'tag'),
+        select('f-tag', 'Tag', [['ranked', `Ranked (${state.papers.filter((p) => p.rank).length})`], ['', `All (${state.papers.length})`],
+          ['added', `Added by readers (${state.papers.filter((p) => p.added_by).length})`],
+          ['essential', 'Essential read'], ['should', 'Should read'], ['mildly', 'Mildly interesting'], ['reference', 'Other references']], 'tag'),
         select('f-status', 'Reading status', [['', 'Any status'], ['open', 'Needs readers'], ['progress', 'Being read'], ['done', 'Fully read'], ['mine', 'Claimed by me']], 'status'),
         select('f-access', 'Access', [['', 'Any access'], ['oa', 'Free full text'], ['closed', 'Paywalled']], 'access')),
       listHost));
@@ -458,47 +482,347 @@
       h('section', { class: 'stack' }, h('h2', {}, 'Export'), exportButtons())));
   }
 
-  function renderSuggest() {
-    const citation = h('textarea', { id: 's-citation', required: true, placeholder: 'Authors (year). Title. Journal.' });
-    const doi = h('input', { type: 'text', id: 's-doi', placeholder: '10.xxxx/…' });
-    const section = h('select', { id: 's-section' }, h('option', { value: '' }, 'Not sure'),
-      Object.entries(SECTIONS).map(([s, t]) => h('option', { value: s }, `§${s} ${t}`)));
-    const why = h('textarea', { id: 's-why', placeholder: 'What does it add?' });
+  /* ---------- adding papers ---------- */
+
+  function safeHref(url) { return url && /^https?:\/\//i.test(url) ? url : null; }
+  function cleanDoi(text) {
+    return text.trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, '').replace(/^doi:\s*/i, '').replace(/[.\s]+$/, '');
+  }
+  function initials(given) {
+    return (given || '').split(/[\s.-]+/).filter(Boolean).map((w) => w[0].toUpperCase()).join('');
+  }
+  function paperWithDoi(doi, exceptId) {
+    const d = doi.toLowerCase();
+    return state.papers.find((x) => x.doi && x.doi.toLowerCase() === d && x.id !== exceptId);
+  }
+
+  // Look a DOI up in OpenAlex (which also knows about free full text), falling back to Crossref
+  async function lookupDoi(doi) {
+    const path = encodeURI(doi).replace(/[?#]/g, encodeURIComponent);
+    try {
+      const r = await fetch(`https://api.openalex.org/works/https://doi.org/${path}`);
+      if (r.ok) {
+        const w = await r.json();
+        const src = w.primary_location && w.primary_location.source;
+        const best = w.best_oa_location || {};
+        return {
+          doi, title: w.title, year: w.publication_year, journal: src ? src.display_name : '',
+          authors: (w.authorships || []).map((a) => {
+            const parts = a.author.display_name.split(' ');
+            return { family: parts.pop(), given: parts.join(' ') };
+          }),
+          volume: w.biblio.volume, issue: w.biblio.issue,
+          pages: [w.biblio.first_page, w.biblio.last_page].filter(Boolean).join('–'),
+          preprint: w.type === 'preprint',
+          is_oa: Boolean(w.open_access && w.open_access.is_oa),
+          oa_status: w.open_access ? w.open_access.oa_status : null,
+          oa_url: safeHref(w.open_access && w.open_access.oa_url), pdf_url: safeHref(best.pdf_url),
+        };
+      }
+    } catch (err) { /* try Crossref */ }
+    let r;
+    try { r = await fetch(`https://api.crossref.org/works/${path}`); } catch (err) { r = null; }
+    if (!r || !r.ok) {
+      throw new Error(r && r.status === 404 ? 'No record found for this DOI. Check it, or fill in the details by hand.'
+        : 'The lookup service is not responding. Fill in the details by hand.');
+    }
+    const m = (await r.json()).message;
+    return {
+      doi, title: (m.title || [])[0], year: (((m.issued || {})['date-parts'] || [[null]])[0] || [null])[0],
+      journal: (m['short-container-title'] || [])[0] || (m['container-title'] || [])[0] || '',
+      authors: (m.author || []).map((a) => ({ family: a.family || a.name || '', given: a.given || '' })),
+      volume: m.volume, issue: m.issue, pages: m.page, preprint: m.type === 'posted-content',
+    };
+  }
+
+  // Same style as the bibliography: "Surname AB, Surname C, et al. (2024). Title. Journal 6(5):e1–e9. doi:…"
+  function formatCitation(m) {
+    const names = m.authors.map((a) => `${a.family} ${initials(a.given)}`.trim());
+    const authors = names.length > 3 ? `${names[0]}, et al.` : names.join(', ');
+    const issue = m.volume ? `${m.volume}${m.issue ? `(${m.issue})` : ''}${m.pages ? `:${m.pages}` : ''}` : (m.pages || '');
+    const where = [m.journal, issue].filter(Boolean).join(' ');
+    return `${authors || 'Unknown authors'} (${m.year || 'n.d.'}). ${(m.title || '').replace(/\.$/, '')}. ${where ? `${where}. ` : ''}doi:${m.doi}`;
+  }
+  function formatShortCite(m) {
+    const first = m.authors[0] ? m.authors[0].family : 'Unknown';
+    return `${first}${m.authors.length > 1 ? ' et al.' : ''} ${m.year || 'n.d.'}${m.journal ? `, ${m.journal}` : ''}`;
+  }
+
+  function renderAdd() {
+    const editing = state.editPaperId ? paperById(state.editPaperId) : null;
+    const p = editing || {};
+    let found = null; // record from the last DOI lookup
+    const input = (id, props) => h('input', { type: 'text', id, ...props });
+    const doi = input('a-doi', { value: p.doi || '', placeholder: '10.1038/… or a doi.org link' });
+    const lookupMsg = h('p', { class: 'small muted', role: 'status' });
+    const title = input('a-title', { required: true, maxlength: 500, value: p.title || '' });
+    const short = input('a-short', { required: true, maxlength: 200, value: p.short_cite || '', placeholder: 'Surname et al. 2025, Journal' });
+    const citation = h('textarea', { id: 'a-citation', required: true, maxlength: 2000, rows: 3, value: p.citation || '', placeholder: 'Authors (year). Title. Journal volume(issue):pages. doi:…' });
+    const link = h('input', { type: 'url', id: 'a-url', value: p.doi ? (p.oa_url || '') : (p.url || ''), placeholder: 'https://…' });
+    const section = h('select', { id: 'a-section', required: true },
+      h('option', { value: '' }, 'Choose a section'),
+      Object.entries(SECTIONS).map(([n, t]) => h('option', { value: n, selected: String(p.section || '') === n }, `§${n} ${t}`)));
+    const tag = h('select', { id: 'a-tag' }, Object.entries(TAGS).map(([t, info]) =>
+      h('option', { value: t, selected: (p.tag || 'should') === t }, `${info.label}${info.need === 2 ? ' (2 readers)' : ''}`)));
+    const why = h('textarea', { id: 'a-why', maxlength: 2000, rows: 2, value: p.why_read || '', placeholder: 'What does it add to the chapter?' });
+    const free = h('input', { type: 'checkbox', id: 'a-free', checked: p.is_oa });
+    const preprint = h('input', { type: 'checkbox', id: 'a-preprint', checked: p.verify_flag === 'preprint' });
+    const claimIt = h('input', { type: 'checkbox', id: 'a-claim', checked: true });
+
+    const duplicateMessage = (other) => {
+      lookupMsg.replaceChildren('This paper is already in the list: ',
+        h('button', { class: 'paper-title', type: 'button', onclick: () => openPaper(other.id) }, shortCite(other)), '.');
+    };
+
+    const lookup = h('button', {
+      class: 'btn btn-secondary', type: 'button',
+      onclick: async () => {
+        const d = cleanDoi(doi.value);
+        if (!d) { lookupMsg.textContent = 'Type or paste a DOI first.'; return; }
+        const other = paperWithDoi(d, p.id);
+        if (other) { duplicateMessage(other); return; }
+        lookup.disabled = true;
+        lookupMsg.textContent = 'Looking it up…';
+        try {
+          found = await lookupDoi(d);
+          doi.value = d;
+          title.value = found.title || '';
+          short.value = formatShortCite(found);
+          citation.value = formatCitation(found);
+          preprint.checked = found.preprint;
+          if ('is_oa' in found) free.checked = found.is_oa;
+          if (found.oa_url && !link.value) link.value = found.oa_url;
+          lookupMsg.textContent = `Found: ${found.title}. Check the details below${found.is_oa ? '; a free full text is available' : ''}.`;
+        } catch (err) {
+          lookupMsg.textContent = err.message;
+        } finally {
+          lookup.disabled = false;
+        }
+      },
+    }, 'Look up');
+
     const form = h('form', {
       class: 'card stack',
       onsubmit: async (e) => {
         e.preventDefault();
-        const { error } = await state.sb.from('suggestions').insert({
-          user_id: uid(), citation: citation.value.trim(), doi: doi.value.trim() || null,
-          section: section.value ? Number(section.value) : null, why: why.value.trim() || null,
-        });
-        if (error) { toast(friendlyError(error), true); return; }
-        await loadTable('suggestions');
-        toast('Thanks: suggestion added for review.');
-        renderSuggest();
+        const d = cleanDoi(doi.value);
+        const url = link.value.trim();
+        if (!d && !url) { toast('Add a DOI or a link so the others can find the paper.', true); return; }
+        if (url && !safeHref(url)) { toast('The link must start with http:// or https://', true); return; }
+        const other = d && paperWithDoi(d, p.id);
+        if (other) { duplicateMessage(other); toast('This paper is already in the list.', true); return; }
+        const oa = found && found.doi.toLowerCase() === d.toLowerCase() ? found : null;
+        const row = {
+          section: Number(section.value), section_title: SECTIONS[section.value], tag: tag.value,
+          title: title.value.trim(), short_cite: short.value.trim(), citation: citation.value.trim(),
+          doi: d || null, url: d ? `https://doi.org/${d}` : url, why_read: why.value.trim() || null,
+          is_oa: free.checked,
+          oa_status: free.checked ? (oa && oa.oa_status) || p.oa_status || null : null,
+          oa_url: free.checked ? url || (oa && oa.oa_url) || null : null,
+          pdf_url: free.checked ? (oa && oa.pdf_url) || p.pdf_url || null : null,
+          verify_flag: preprint.checked ? 'preprint' : 'verified',
+        };
+        const submit = form.querySelector('button[type="submit"]');
+        submit.disabled = true;
+        const query = editing
+          ? state.sb.from('papers').update(row).eq('id', p.id).select()
+          : state.sb.from('papers').insert({ ...row, added_by: uid() }).select();
+        const { data, error } = await query;
+        submit.disabled = false;
+        if (error || !data.length) { toast(error ? friendlyError(error) : 'Could not save this paper.', true); return; }
+        await loadTable('papers');
+        state.editPaperId = null;
+        if (!editing && claimIt.checked) await claim(data[0].id);
+        toast(editing ? 'Changes saved.' : 'Added. Everyone can see it now.');
+        state.filters = { ...state.filters, tag: 'added', status: '', q: '' };
+        location.hash = '#/papers';
+        openPaper(data[0].id);
       },
     },
-    h('h2', {}, 'Suggest a paper'),
-    h('p', { class: 'muted small' }, 'Found something the list is missing? The chapter lead reviews suggestions and adds accepted papers to the tracker.'),
-    h('div', { class: 'field' }, h('label', { for: 's-citation' }, 'Citation'), citation),
+    h('h2', {}, editing ? 'Edit the paper you added' : 'Add a paper'),
+    editing ? null : h('p', { class: 'muted small' }, 'Found something the list is missing? Paste its DOI and click Look up to fill in the details, or type them in. The paper appears in everyone\'s list straight away.'),
+    h('div', { class: 'field' }, h('label', { for: 'a-doi' }, 'DOI'),
+      h('div', { class: 'input-row' }, doi, lookup), lookupMsg),
+    h('div', { class: 'field' }, h('label', { for: 'a-title' }, 'Title'), title),
+    h('div', { class: 'field' }, h('label', { for: 'a-short' }, 'Short citation'), short,
+      h('span', { class: 'hint' }, 'How it is shown in lists, e.g. "Topol 2019, Nat Med".')),
+    h('div', { class: 'field' }, h('label', { for: 'a-citation' }, 'Full citation'), citation),
+    h('div', { class: 'field' }, h('label', { for: 'a-url' }, 'Link'), link,
+      h('span', { class: 'hint' }, 'Needed if there is no DOI. Otherwise, optionally a free full-text copy (e.g. arXiv, PubMed Central).')),
     h('div', { class: 'row' },
-      h('div', { class: 'field', style: 'flex:1;min-width:200px' }, h('label', { for: 's-doi' }, 'DOI (optional)'), doi),
-      h('div', { class: 'field', style: 'flex:1;min-width:200px' }, h('label', { for: 's-section' }, 'Chapter section'), section)),
-    h('div', { class: 'field' }, h('label', { for: 's-why' }, 'Why it matters'), why),
-    h('div', {}, h('button', { class: 'btn', type: 'submit' }, 'Submit suggestion')));
-    const list = [...state.suggestions].sort((a, b) => b.created_at.localeCompare(a.created_at));
+      h('div', { class: 'field', style: 'flex:1;min-width:220px' }, h('label', { for: 'a-section' }, 'Chapter section'), section),
+      h('div', { class: 'field', style: 'flex:1;min-width:220px' }, h('label', { for: 'a-tag' }, 'Priority'), tag)),
+    h('div', { class: 'field' }, h('label', { for: 'a-why' }, 'Why read it (optional)'), why),
+    h('label', { class: 'check' }, free, h('span', {}, 'Free to read online (open access)')),
+    h('label', { class: 'check' }, preprint, h('span', {}, 'Preprint, not peer reviewed')),
+    editing ? null : h('label', { class: 'check' }, claimIt, h('span', {}, 'I\'ll read it myself: claim it for me')),
+    h('div', { class: 'row' },
+      h('button', { class: 'btn', type: 'submit' }, editing ? 'Save changes' : 'Add to the list'),
+      editing ? h('a', { class: 'btn btn-quiet', href: '#/papers', onclick: () => { state.editPaperId = null; } }, 'Cancel') : null));
+
+    const mine = state.papers.filter((x) => x.added_by === uid()).sort((a, b) => b.created_at.localeCompare(a.created_at));
     mount(h('div', { class: 'stack-lg' }, form,
-      h('section', { class: 'stack' },
-        h('h2', {}, `Suggestions (${list.length})`),
-        list.length ? h('ul', { class: 'list-plain' }, list.map((s) => h('li', { class: 'card stack', style: 'padding:14px 16px;gap:6px' },
-          h('div', { class: 'row' },
-            h('span', { class: 'badge badge-status' }, s.status === 'open' ? 'Under review' : s.status === 'added' ? 'Added' : 'Not added'),
-            s.section ? h('span', { class: 'muted small' }, `§${s.section} ${SECTIONS[s.section]}`) : null,
-            h('span', { class: 'muted small' }, `· ${readerName(s.user_id)}`)),
-          h('p', {}, s.citation),
-          s.doi ? h('a', { href: `https://doi.org/${s.doi}`, target: '_blank', rel: 'noopener' }, `doi:${s.doi}`) : null,
-          s.why ? h('p', { class: 'muted small' }, s.why) : null)))
-          : h('p', { class: 'empty' }, 'No suggestions yet.'))));
+      mine.length ? h('section', { class: 'stack' }, h('h2', {}, `Papers you added (${mine.length})`),
+        h('div', { class: 'paper-list' }, mine.map(paperRow))) : null));
+  }
+
+  function editPaper(pid) {
+    state.editPaperId = pid;
+    if (dialog.open) dialog.close();
+    if (location.hash === '#/add') route(); else location.hash = '#/add';
+  }
+
+  async function removePaper(p) {
+    if (!confirm('Remove this paper from the list? Your own claim and note on it go too.')) return;
+    const { data, error } = await state.sb.from('papers').delete().eq('id', p.id).select('id');
+    if (error) { toast(friendlyError(error), true); return; }
+    if (!data.length) {
+      toast('Other readers have claimed this paper or written notes on it, so it stays. Ask the chapter lead if it should go.', true);
+      return;
+    }
+    dialog.close();
+    await Promise.all(['papers', 'claims', 'notes'].map(loadTable));
+    toast('Paper removed.');
+    rerender();
+  }
+
+  /* ---------- chapter materials ---------- */
+
+  const FILE_TYPES = {
+    pdf: 'application/pdf', md: 'text/markdown', txt: 'text/plain', csv: 'text/csv', bib: 'text/plain', ris: 'text/plain',
+    doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ppt: 'application/vnd.ms-powerpoint', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    odt: 'application/vnd.oasis.opendocument.text', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
+  };
+  const MAX_FILE = 50 * 1024 * 1024;
+
+  function fileSize(n) { return n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`; }
+  function extension(name) { return (name.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase() || ''; }
+
+  async function openMaterial(m) {
+    // Open the tab straight away (pop-up blockers stop tabs opened after a wait), then send it to a short-lived link
+    const win = window.open('', '_blank');
+    if (win) win.opener = null;
+    const { data, error } = await state.sb.storage.from('materials').createSignedUrl(m.storage_path, 600);
+    if (error) { if (win) win.close(); toast(friendlyError(error), true); return; }
+    if (win) win.location.href = data.signedUrl; else location.href = data.signedUrl;
+  }
+
+  async function removeMaterial(m) {
+    if (!confirm(`Remove "${m.title}" for everyone?`)) return;
+    const { data, error } = await state.sb.from('materials').delete().eq('id', m.id).select('id');
+    if (error || !data.length) { toast(error ? friendlyError(error) : 'Could not remove it.', true); return; }
+    if (m.storage_path) await state.sb.storage.from('materials').remove([m.storage_path]);
+    await loadTable('materials');
+    toast('Removed.');
+    drawMaterials();
+  }
+
+  function materialRow(m) {
+    const mine = Boolean(m.added_by) && m.added_by === uid();
+    let what;
+    if (m.storage_path) what = `${(extension(m.file_name || '') || 'file').toUpperCase()} · ${fileSize(m.size_bytes || 0)}`;
+    else { try { what = new URL(m.url).hostname.replace(/^www\./, ''); } catch (err) { what = 'Link'; } }
+    const meta = [what, m.added_by ? `shared by ${mine ? 'you' : readerName(m.added_by)}` : null,
+      new Date(m.created_at).toLocaleDateString()].filter(Boolean).join(' · ');
+    return h('article', { class: 'material-row' },
+      h('div', { class: 'material-main' },
+        h('h3', {}, m.title),
+        m.description ? h('p', { class: 'small' }, m.description) : null,
+        h('p', { class: 'paper-meta' }, meta)),
+      h('div', { class: 'row' },
+        m.url ? h('a', { class: 'btn btn-secondary btn-small', href: safeHref(m.url), target: '_blank', rel: 'noopener noreferrer' }, 'Open link ↗')
+          : h('button', { class: 'btn btn-secondary btn-small', type: 'button', onclick: () => openMaterial(m) }, 'Open'),
+        mine ? h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => removeMaterial(m) }, 'Remove') : null));
+  }
+
+  let leadHost, sharedHost, sharedHeading;
+  function drawMaterials() {
+    const lead = state.materials.filter((m) => m.sort_order !== null)
+      .sort((a, b) => a.sort_order - b.sort_order || a.created_at.localeCompare(b.created_at));
+    const shared = state.materials.filter((m) => m.sort_order === null)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    leadHost.replaceChildren(lead.length ? h('div', { class: 'paper-list' }, lead.map(materialRow))
+      : h('p', { class: 'empty' }, 'The chapter lead has not added any documents yet.'));
+    sharedHeading.textContent = `Shared by readers (${shared.length})`;
+    sharedHost.replaceChildren(shared.length ? h('div', { class: 'paper-list' }, shared.map(materialRow))
+      : h('p', { class: 'empty' }, 'Nothing shared yet.'));
+  }
+
+  function renderMaterials() {
+    let kind = 'file';
+    const title = h('input', { type: 'text', id: 'm-title', required: true, maxlength: 200, placeholder: 'e.g. Draft of §7, comments welcome' });
+    const description = h('textarea', { id: 'm-description', maxlength: 1000, rows: 2, placeholder: 'Optional: what is it, and what should people do with it?' });
+    const file = h('input', { type: 'file', id: 'm-file', accept: Object.keys(FILE_TYPES).map((x) => `.${x}`).join(',') });
+    const link = h('input', { type: 'url', id: 'm-link', placeholder: 'https://docs.google.com/…' });
+    const fileField = h('div', { class: 'field' }, h('label', { for: 'm-file' }, 'File'), file,
+      h('span', { class: 'hint' }, 'PDF, Word, PowerPoint, Excel, Markdown, text, CSV, BibTeX/RIS or images; up to 50 MB.'));
+    const linkField = h('div', { class: 'field', hidden: true }, h('label', { for: 'm-link' }, 'Link'), link,
+      h('span', { class: 'hint' }, 'For example a shared Google Doc or Overleaf project. Check that its sharing settings let the others open it.'));
+    const status = h('p', { class: 'small muted', role: 'status' });
+    const button = h('button', { class: 'btn', type: 'submit' }, 'Share with the team');
+    const choose = (value) => {
+      kind = value;
+      fileField.hidden = value !== 'file';
+      linkField.hidden = value !== 'link';
+    };
+    const radio = (value, label) => h('label', { class: 'check' },
+      h('input', { type: 'radio', name: 'm-kind', value, checked: value === 'file', onchange: () => choose(value) }), h('span', {}, label));
+
+    const form = h('form', {
+      class: 'card stack',
+      onsubmit: async (e) => {
+        e.preventDefault();
+        const row = { title: title.value.trim(), description: description.value.trim() || null, added_by: uid() };
+        let path = null;
+        if (kind === 'link') {
+          if (!safeHref(link.value.trim())) { toast('The link must start with http:// or https://', true); return; }
+          row.url = link.value.trim();
+        } else {
+          const f = file.files[0];
+          if (!f) { toast('Choose a file first.', true); return; }
+          const type = FILE_TYPES[extension(f.name)];
+          if (!type) { toast('That file type is not accepted here.', true); return; }
+          if (f.size > MAX_FILE) { toast('Files can be up to 50 MB.', true); return; }
+          button.disabled = true;
+          status.textContent = `Uploading ${f.name}…`;
+          const safeName = f.name.normalize('NFKD').replace(/[^\w.-]+/g, '-').replace(/-+/g, '-').slice(-80);
+          path = `readers/${uid()}/${Date.now()}-${safeName}`;
+          const { error } = await state.sb.storage.from('materials').upload(path, f, { contentType: type, upsert: false });
+          if (error) { button.disabled = false; status.textContent = ''; toast(friendlyError(error), true); return; }
+          Object.assign(row, { storage_path: path, file_name: f.name, size_bytes: f.size });
+        }
+        button.disabled = true;
+        const { error } = await state.sb.from('materials').insert(row);
+        button.disabled = false;
+        status.textContent = '';
+        if (error) {
+          if (path) await state.sb.storage.from('materials').remove([path]);
+          toast(friendlyError(error), true);
+          return;
+        }
+        await loadTable('materials');
+        toast('Shared with the team.');
+        renderMaterials();
+      },
+    },
+    h('h2', {}, 'Share a document'),
+    h('p', { class: 'muted small' }, 'Drafts, figures, notes from a meeting, a useful report. Everyone signed in to the tracker can open it. Please don\'t upload publisher PDFs of paywalled papers.'),
+    h('div', { class: 'field' }, h('label', { for: 'm-title' }, 'Title'), title),
+    h('div', { class: 'field' }, h('label', { for: 'm-description' }, 'Description'), description),
+    h('div', { class: 'row', role: 'radiogroup', 'aria-label': 'What are you sharing?' }, radio('file', 'Upload a file'), radio('link', 'Add a link')),
+    fileField, linkField,
+    h('div', { class: 'row' }, button, status));
+
+    mount(h('div', { class: 'stack-lg' },
+      h('div', { class: 'stack' },
+        h('h1', {}, 'Chapter materials'),
+        h('p', { class: 'muted' }, 'The chapter plan and supporting documents, plus anything the team shares. Files are private to signed-in readers.')),
+      h('section', { class: 'stack' }, h('h2', {}, 'Chapter documents'), leadHost = h('div')),
+      h('section', { class: 'stack' }, sharedHeading = h('h2'), sharedHost = h('div')),
+      form));
+    drawMaterials();
   }
 
   /* ---------- paper dialog ---------- */
@@ -612,7 +936,10 @@
   function renderDialog() {
     const p = paperById(state.openPaperId);
     const flag = FLAG_TEXT[p.verify_flag];
-    const doiUrl = p.doi ? `https://doi.org/${p.doi}` : p.url;
+    const doiUrl = safeHref(p.doi ? `https://doi.org/${p.doi}` : p.url);
+    const freeUrl = safeHref(p.oa_url);
+    const pdfUrl = safeHref(p.pdf_url);
+    const adder = p.added_by ? (p.added_by === uid() ? 'you' : readerName(p.added_by)) : null;
     const [readers, others] = liveParts(p);
     dialog.replaceChildren(
       h('div', { class: 'dialog-head' },
@@ -625,8 +952,14 @@
           h('p', { class: 'citation' }, p.citation),
           h('div', { class: 'links' },
             doiUrl ? h('a', { href: doiUrl, target: '_blank', rel: 'noopener' }, p.oa_status === 'web' ? 'Official page ↗' : 'Publisher page ↗') : null,
-            p.is_oa && p.oa_url && p.oa_url !== doiUrl ? h('a', { href: p.oa_url, target: '_blank', rel: 'noopener' }, 'Free full text ↗') : null,
-            p.pdf_url ? h('a', { href: p.pdf_url, target: '_blank', rel: 'noopener' }, 'PDF ↗') : null),
+            p.is_oa && freeUrl && freeUrl !== doiUrl ? h('a', { href: freeUrl, target: '_blank', rel: 'noopener' }, 'Free full text ↗') : null,
+            pdfUrl ? h('a', { href: pdfUrl, target: '_blank', rel: 'noopener' }, 'PDF ↗') : null),
+          adder ? h('div', { class: 'row' },
+            h('span', { class: 'muted small' }, `Added by ${adder} on ${new Date(p.created_at).toLocaleDateString()}`),
+            p.added_by === uid() ? [
+              h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => editPaper(p.id) }, 'Edit'),
+              h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => removePaper(p) }, 'Remove'),
+            ] : null) : null,
           !p.is_oa ? h('p', { class: 'muted small' }, 'Paywalled: open it through your own library or institutional access. Please don\'t share PDFs of paywalled papers here.') : null),
         p.why_read ? h('div', { class: 'callout callout-info' }, h('strong', {}, 'Why read it: '), p.why_read) : null,
         flag || (p.check_notes && p.check_notes.length) ? h('div', { class: 'callout' },
@@ -658,7 +991,8 @@
       if (!papers.length) continue;
       lines.push(`## §${s} ${SECTIONS[s]}`, '');
       for (const p of papers) {
-        lines.push(`### ${shortCite(p)} — ${p.title || ''}`, `${p.rank ? `#${p.rank} · ` : ''}${TAGS[p.tag].label} · ${p.doi ? 'https://doi.org/' + p.doi : p.url || ''}`, '');
+        const origin = p.added_by ? ` · added by ${readerName(p.added_by)}` : '';
+        lines.push(`### ${shortCite(p)} — ${p.title || ''}`, `${p.rank ? `#${p.rank} · ` : ''}${TAGS[p.tag].label}${origin} · ${p.doi ? 'https://doi.org/' + p.doi : p.url || ''}`, '');
         for (const n of notesFor(p.id)) {
           lines.push(`**${readerName(n.user_id)}**${n.numbers_verified ? ' (numbers checked against full text)' : ''}`);
           for (const [k, label] of NOTE_FIELDS) if (n[k]) lines.push(`- ${label}: ${n[k].replace(/\s*\n\s*/g, ' ')}`);
@@ -690,19 +1024,27 @@
 
   /* ---------- routing and startup ---------- */
 
-  const VIEWS = { overview: renderOverview, papers: renderPapers, mine: renderMine, suggest: renderSuggest, profile: () => renderProfile(true) };
+  const VIEWS = {
+    overview: renderOverview, papers: renderPapers, mine: renderMine, add: renderAdd, suggest: renderAdd,
+    materials: renderMaterials, profile: () => renderProfile(true),
+  };
 
-  function route(keepScroll) {
+  // On live updates these views refresh their lists only, so nobody loses what they are typing
+  const LIVE_REDRAW = { papers: () => drawList(), materials: () => drawMaterials(), add: () => {}, suggest: () => {}, profile: () => {} };
+
+  function route(live) {
     if (!state.session || !state.me) return;
-    const view = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0];
+    const view = currentView();
+    if (live === true && app.dataset.view === view && LIVE_REDRAW[view]) { LIVE_REDRAW[view](); return; }
     const render = VIEWS[view] || renderOverview;
+    if (view !== 'add') state.editPaperId = null;
     document.querySelectorAll('#nav a').forEach((a) => {
       if (a.dataset.view === view) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
     const y = window.scrollY;
     render();
-    if (keepScroll === true) window.scrollTo(0, y);
+    if (live === true) window.scrollTo(0, y);
   }
 
   function showChrome() {
@@ -741,7 +1083,7 @@
     document.addEventListener('visibilitychange', async () => {
       if (document.visibilityState !== 'visible' || !state.session || !state.me) return;
       try {
-        await Promise.all(['claims', 'notes', 'readers', 'suggestions'].map(loadTable));
+        await Promise.all(TABLES.map(loadTable));
         rerender();
       } catch (err) { /* offline: keep showing what we have */ }
     });

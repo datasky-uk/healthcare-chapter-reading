@@ -24,13 +24,22 @@ def main():
     env = load_env()
     papers = json.loads((ROOT / "data" / "references.json").read_text(encoding="utf-8"))
     rows = [row(p) for p in papers]
+    status, added = request(env, "GET", "/rest/v1/papers?select=id,doi&added_by=not.is.null")
+    if status >= 300:
+        sys.exit(f"could not list papers added by readers ({status}): {added}")
+    # A paper a reader added that has since joined the bibliography keeps its id, so its claims and notes stay
+    added_ids = {p["doi"].lower(): p["id"] for p in added if p["doi"]}
+    for r in rows:
+        if r["doi"] and r["doi"].lower() in added_ids:
+            print(f"{r['id']}: already added by a reader as {added_ids[r['doi'].lower()]}; updating that entry")
+            r["id"] = added_ids[r["doi"].lower()]
     status, body = request(env, "POST", "/rest/v1/papers?on_conflict=id", rows,
                            {"Prefer": "resolution=merge-duplicates,return=minimal"})
     if status >= 300:
         sys.exit(f"seed failed ({status}): {body}")
-    # Papers no longer in the bibliography: remove them unless someone has claimed or noted them
+    # Papers no longer in the bibliography: remove them unless a reader added them, or someone has claimed or noted them
     wanted = {r["id"] for r in rows}
-    status, body = request(env, "GET", "/rest/v1/papers?select=id,claims(paper_id),notes(paper_id)")
+    status, body = request(env, "GET", "/rest/v1/papers?select=id,claims(paper_id),notes(paper_id)&added_by=is.null")
     if status >= 300:
         sys.exit(f"could not list papers ({status}): {body}")
     kept = []
@@ -46,7 +55,7 @@ def main():
         print("WARNING: these papers are no longer in the bibliography but have claims or notes, so they were kept:",
               ", ".join(kept))
     status, body = request(env, "GET", "/rest/v1/papers?select=id")
-    print(f"seeded {len(rows)} papers; table now holds {len(body)}")
+    print(f"seeded {len(rows)} papers; table now holds {len(body)} ({len(added)} added by readers)")
 
 
 if __name__ == "__main__":

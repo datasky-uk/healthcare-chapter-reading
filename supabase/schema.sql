@@ -1,6 +1,7 @@
--- Reading tracker schema. Run once in the Supabase SQL editor (safe to re-run).
--- Everything requires a signed-in, invited user. Papers are written only with
--- the service key (scripts/seed.py); readers write only their own rows.
+-- Reading tracker schema. Run once in the Supabase SQL editor (safe to re-run),
+-- then run 002_added_papers_and_materials.sql.
+-- Everything requires a signed-in, invited user. Bibliography papers are written
+-- only with the service key (scripts/seed.py); readers write only their own rows.
 
 create table if not exists papers (
   id            text primary key,

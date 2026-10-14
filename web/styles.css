@@ -93,6 +93,7 @@ a:hover { text-decoration-thickness: 2px; }
   white-space: nowrap;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #0F1729; } }
+a.btn { display: inline-block; text-decoration: none; }
 .btn:hover { filter: brightness(1.08); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn-secondary { background: transparent; color: var(--accent); }
@@ -103,13 +104,16 @@ a:hover { text-decoration-thickness: 2px; }
 label { font-weight: 500; color: var(--ink); font-size: 0.92rem; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field .hint { font-size: 0.82rem; color: var(--muted); }
-input[type="text"], input[type="email"], input[type="search"], select, textarea {
+input[type="text"], input[type="email"], input[type="search"], input[type="url"], select, textarea {
   font: 400 0.95rem/1.4 var(--sans); color: var(--text); background: var(--surface);
   border: 1px solid var(--border); border-radius: 8px; padding: 9px 11px; width: 100%;
 }
 textarea { min-height: 76px; resize: vertical; }
 .check { display: flex; gap: 8px; align-items: flex-start; font-weight: 400; }
 .check input { margin-top: 4px; }
+input[type="file"] { font: 400 0.92rem/1.4 var(--sans); color: var(--text); max-width: 100%; }
+.input-row { display: flex; gap: 8px; }
+.input-row input { flex: 1; min-width: 0; }
 
 /* Cards */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
@@ -204,6 +208,13 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .note-card dt { color: var(--muted); }
 .note-card dd { margin: 0; white-space: pre-wrap; }
 @media (max-width: 640px) { .note-card dl { grid-template-columns: 1fr; } .note-card dd { margin-bottom: 6px; } }
+
+/* Materials */
+.material-row {
+  display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+}
+.material-main { display: flex; flex-direction: column; gap: 4px; flex: 1 1 320px; min-width: 0; }
 
 .list-plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .empty { padding: 24px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 12px; }

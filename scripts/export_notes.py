@@ -24,7 +24,6 @@ def main():
     names = {r["user_id"]: r["display_name"] for r in fetch(env, "readers")}
     claims = fetch(env, "claims")
     notes = fetch(env, "notes")
-    suggestions = fetch(env, "suggestions")
 
     by_paper = defaultdict(list)
     for n in notes:
@@ -46,8 +45,9 @@ def main():
         lines += [f"## §{number} {title}", ""]
         for p in in_section:
             rank = f"#{p['rank']} · " if p["rank"] else ""
+            origin = f" · added by {names.get(p['added_by'], 'a reader')}" if p.get("added_by") else ""
             lines += [f"### {p['short_cite']} — {p['title'] or ''}".rstrip(" —"),
-                      f"{rank}{TAG_LABEL[p['tag']]} · {p['url'] or ''}", ""]
+                      f"{rank}{TAG_LABEL[p['tag']]}{origin} · {p['url'] or ''}", ""]
             for n in sorted(by_paper[p["id"]], key=lambda n: names.get(n["user_id"], "")):
                 who = names.get(n["user_id"], "Unknown reader")
                 status = "done" if (p["id"], n["user_id"]) in done else "in progress"
@@ -64,12 +64,14 @@ def main():
                     lines.append(f"- Suggests re-tagging as: {TAG_LABEL[n['suggested_tag']]}")
                 lines.append("")
 
-    if suggestions:
-        lines += ["## Papers suggested by readers", ""]
-        for s in suggestions:
-            sec = f"§{s['section']} · " if s.get("section") else ""
-            lines.append(f"- [{s['status']}] {sec}{s['citation']}"
-                         f"{' · doi:' + s['doi'] if s.get('doi') else ''} — {names.get(s['user_id'], '?')}: {s.get('why') or ''}")
+    added = sorted((p for p in papers.values() if p.get("added_by")), key=lambda p: (p["section"], p["created_at"]))
+    if added:
+        lines += ["## Papers added by readers", "",
+                  "Not in the original bibliography: add the ones worth citing to chapter_outline_and_literature.md.", ""]
+        for p in added:
+            why = f" — {p['why_read']}" if p.get("why_read") else ""
+            lines.append(f"- §{p['section']} · {TAG_LABEL[p['tag']]} · {p['citation']}"
+                         f" (added by {names.get(p['added_by'], 'a reader')}){why}")
         lines.append("")
 
     out = ROOT.parent / "notes_export.md"
