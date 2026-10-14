@@ -226,3 +226,42 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.error { background: var(--warn); color: #FFFEFB; }
+
+/* Writing the chapter */
+.stage-banner { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; color: var(--ink); }
+.over { color: var(--warn); font-weight: 600; }
+.ok { color: var(--accent-ink); font-weight: 600; }
+.bar-over { background: var(--warn); }
+.chapter-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+@media (max-width: 960px) { .chapter-layout { grid-template-columns: 1fr; } }
+.chapter-text { font: 400 1.06rem/1.75 var(--serif); color: var(--text); }
+.chapter-text p { margin: 0 0 1em; }
+.chapter-text .chapter-sub { font-family: var(--serif); margin: 1.2em 0 0.5em; }
+mark.claim { background: var(--accent-soft); color: inherit; border-bottom: 2px solid var(--accent); padding: 0 1px; cursor: pointer; }
+mark.claim:hover, mark.claim:focus-visible { background: var(--warn-soft); }
+mark.claim-addressed { background: transparent; }
+mark.claim-dropped { background: transparent; border-bottom-style: dashed; border-bottom-color: var(--muted); }
+sup.fn { font: 600 0.7em var(--sans); color: var(--accent); margin-left: 1px; }
+ol.footnotes { font: 400 0.85rem/1.5 var(--sans); color: var(--muted); border-top: 1px solid var(--border); margin: 18px 0 0; padding: 12px 0 0 22px; overflow-wrap: anywhere; }
+ol.footnotes li { margin-bottom: 4px; }
+.chapter-claims { position: sticky; top: 84px; max-height: calc(100vh - 104px); overflow: auto; }
+@media (max-width: 960px) { .chapter-claims { position: static; max-height: none; } }
+.claim-item { border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.editor { font: 400 0.95rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; min-height: 420px; }
+.cite-results { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.cite-results .btn { white-space: normal; text-align: left; }
+.diff { font: 400 1rem/1.7 var(--serif); white-space: pre-wrap; }
+.diff ins { background: var(--accent-soft); color: var(--accent-ink); text-decoration: none; }
+.diff del { background: var(--warn-soft); color: var(--warn); }
+.claim-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--bg); display: flex; flex-direction: column; gap: 8px; }
+.claim-card blockquote { margin: 0; padding: 6px 12px; border-left: 3px solid var(--accent); background: var(--surface); font-family: var(--serif); }
+.claim-fields { display: grid; grid-template-columns: 140px 1fr; gap: 10px; }
+@media (max-width: 640px) { .claim-fields { grid-template-columns: 1fr; } }
+.claim-card label, .decision label { display: flex; flex-direction: column; gap: 4px; }
+.choice { display: flex; gap: 8px; flex-wrap: wrap; }
+.verdict { font: 500 0.88rem/1 var(--sans); padding: 8px 12px; border-radius: 8px; cursor: pointer; background: transparent; border: 1px solid var(--border); color: var(--ink); }
+.verdict[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #FFFEFB; }
+.verdict-needs_change[aria-pressed="true"], .verdict-approve_with_additions[aria-pressed="true"] { background: var(--warn); border-color: var(--warn); }
+.verdict-not_supported[aria-pressed="true"], .verdict-reject[aria-pressed="true"] { background: #9F1239; border-color: #9F1239; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .verdict[aria-pressed="true"] { color: #0F1729; } }
+.decision h4, #dlg-draft h4 { margin: 0; color: var(--ink); }

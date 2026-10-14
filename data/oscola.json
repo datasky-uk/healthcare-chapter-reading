@@ -1,206 +1,818 @@
 {
- "s2-topol-ej-2019": "Eric J Topol, 'High-Performance Medicine: The Convergence of Human and Artificial Intelligence' (2019) 25 Nature Medicine 44.",
- "s2-rajkomar-a-2019": "Alvin Rajkomar, Jeffrey Dean and Isaac Kohane, 'Machine Learning in Medicine' (2019) 380 New England Journal of Medicine 1347.",
- "s2-rajpurkar-p-2022": "Pranav Rajpurkar and others, 'AI in Health and Medicine' (2022) 28 Nature Medicine 31.",
- "s2-acosta-jn-2022": "Julián N Acosta and others, 'Multimodal Biomedical AI' (2022) 28 Nature Medicine 1773.",
- "s2-moor-m-2023": "Michael Moor and others, 'Foundation Models for Generalist Medical Artificial Intelligence' (2023) 616 Nature 259.",
- "s2-singhal-k-2023": "Karan Singhal and others, 'Large Language Models Encode Clinical Knowledge' (2023) 620 Nature 172.",
- "s2-singhal-k-2025": "Karan Singhal and others, 'Toward Expert-Level Medical Question Answering with Large Language Models' (2025) 31 Nature Medicine 943.",
- "s2-thirunavukarasu-aj-2023": "Arun James Thirunavukarasu and others, 'Large Language Models in Medicine' (2023) 29 Nature Medicine 1930.",
- "s2-tu-t-2024": "Tao Tu and others, 'Towards Generalist Biomedical AI' (2024) 1 NEJM AI <https://doi.org/10.1056/AIoa2300138>.",
- "s2-rao-vm-2025": "Vishwanatha M Rao and others, 'Multimodal Generative AI for Medical Image Interpretation' (2025) 639 Nature 888.",
- "s2-zou-j-2025": "James Zou and Eric J Topol, 'The Rise of Agentic AI Teammates in Medicine' (2025) 405 Lancet 457.",
- "s2-qiu-j-2024": "Jianing Qiu and others, 'LLM-Based Agentic Systems in Medicine and Healthcare' (2024) 6 Nature Machine Intelligence 1418.",
- "s2-gao-s-2024": "Shanghua Gao and others, 'Empowering Biomedical Discovery with AI Agents' (2024) 187 Cell 6125.",
- "s2-ferber-d-2025": "Dyke Ferber and others, 'Development and Validation of an Autonomous Artificial Intelligence Agent for Clinical Decision-Making in Oncology' (2025) 6 Nature Cancer 1337.",
- "s2-sevilla-j-2022": "Jaime Sevilla and others, 'Compute Trends Across Three Eras of Machine Learning' in *2022 International Joint Conference on Neural Networks (IJCNN)* (IEEE 2022) 1.",
- "s2-stanford-hai-2026": "Stanford Institute for Human-Centered Artificial Intelligence, *AI Index Report 2026* (Stanford University 2026) ch 6 'Medicine' <https://hai.stanford.edu/ai-index/2026-ai-index-report/medicine> accessed 14 October 2026.",
- "s3-gulshan-v-2016": "Varun Gulshan and others, 'Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs' (2016) 316 JAMA 2402.",
- "s3-esteva-a-2017": "Andre Esteva and others, 'Dermatologist-Level Classification of Skin Cancer with Deep Neural Networks' (2017) 542 Nature 115.",
- "s3-lang-k-2023": "Kristina Lång and others, 'Artificial Intelligence-Supported Screen Reading versus Standard Double Reading in the Mammography Screening with Artificial Intelligence Trial (MASAI): A Clinical Safety Analysis of a Randomised, Controlled, Non-Inferiority, Single-Blinded, Screening Accuracy Study' (2023) 24 Lancet Oncology 936.",
- "s3-hernstrom-v-2025": "Veronica Hernström and others, 'Screening Performance and Characteristics of Breast Cancer Detected in the Mammography Screening with Artificial Intelligence Trial (MASAI): A Randomised, Controlled, Parallel-Group, Non-Inferiority, Single-Blinded, Screening Accuracy Study' (2025) 7 Lancet Digital Health e175.",
- "s3-gommers-j-2026": "Jessie Gommers and others, 'Interval Cancer, Sensitivity, and Specificity Comparing AI-Supported Mammography Screening with Standard Double Reading Without AI in the MASAI Study: A Randomised, Controlled, Non-Inferiority, Single-Blinded, Population-Based, Screening-Accuracy Trial' (2026) 407 Lancet 505.",
- "s3-eisemann-n-2025": "Nora Eisemann and others, 'Nationwide Real-World Implementation of AI for Cancer Detection in Population-Based Mammography Screening' (2025) 31 Nature Medicine 917.",
- "s3-soleymanjahi-s-2024": "Saeed Soleymanjahi and others, 'Artificial Intelligence–Assisted Colonoscopy for Polyp Detection: A Systematic Review and Meta-Analysis' (2024) 177 Annals of Internal Medicine 1652.",
- "s3-budzyn-k-2025": "Krzysztof Budzyń and others, 'Endoscopist Deskilling Risk After Exposure to Artificial Intelligence in Colonoscopy: A Multicentre, Observational Study' (2025) 10 Lancet Gastroenterology & Hepatology 896.",
- "s3-chen-rj-2024": "Richard J Chen and others, 'Towards a General-Purpose Foundation Model for Computational Pathology' (2024) 30 Nature Medicine 850.",
- "s3-lu-my-2024": "Ming Y Lu and others, 'A Visual-Language Foundation Model for Computational Pathology' (2024) 30 Nature Medicine 863.",
- "s3-vorontsov-e-2024": "Eugene Vorontsov and others, 'A Foundation Model for Clinical-Grade Computational Pathology and Rare Cancers Detection' (2024) 30 Nature Medicine 2924.",
- "s3-xu-h-2024": "Hanwen Xu and others, 'A Whole-Slide Foundation Model for Digital Pathology from Real-World Data' (2024) 630 Nature 181.",
- "s3-zhou-y-2023": "Yukun Zhou and others, 'A Foundation Model for Generalizable Disease Detection from Retinal Images' (2023) 622 Nature 156.",
- "s3-groh-m-2024": "Matthew Groh and others, 'Deep Learning-Aided Decision Support for Diagnosis of Skin Disease Across Skin Tones' (2024) 30 Nature Medicine 573.",
- "s3-yan-s-2025": "Siyuan Yan and others, 'A Multimodal Vision Foundation Model for Clinical Dermatology' (2025) 31 Nature Medicine 2691.",
- "s3-yao-x-2021": "Xiaoxi Yao and others, 'Artificial Intelligence–Enabled Electrocardiograms for Identification of Patients with Low Ejection Fraction: A Pragmatic, Randomized Clinical Trial' (2021) 27 Nature Medicine 815.",
- "s3-lin-cs-2024": "Chin-Sheng Lin and others, 'AI-Enabled Electrocardiography Alert Intervention and All-Cause Mortality: A Pragmatic Randomized Clinical Trial' (2024) 30 Nature Medicine 1461.",
- "s3-goh-e-2024": "Ethan Goh and others, 'Large Language Model Influence on Diagnostic Reasoning: A Randomized Clinical Trial' (2024) 7 JAMA Network Open e2440969.",
- "s3-goh-e-2025": "Ethan Goh and others, 'GPT-4 Assistance for Improvement of Physician Performance on Patient Care Tasks: A Randomized Controlled Trial' (2025) 31 Nature Medicine 1233.",
- "s3-tu-t-2025": "Tao Tu and others, 'Towards Conversational Diagnostic Artificial Intelligence' (2025) 642 Nature 442.",
- "s3-mcduff-d-2025": "Daniel McDuff and others, 'Towards Accurate Differential Diagnosis with Large Language Models' (2025) 642 Nature 451.",
- "s3-brodeur-pg-2026": "Peter G Brodeur and others, 'Conversational Diagnostic Artificial Intelligence in Ambulatory Primary Care: A Prospective Feasibility Study' [2026] Lancet <https://doi.org/10.1016/S0140-6736(26)01535-7> accessed 14 October 2026.",
- "s3-nori-h-2025": "Harsha Nori and others, 'Sequential Diagnosis with Language Models' (arXiv:2506.22405, 2025) <https://arxiv.org/abs/2506.22405> accessed 14 October 2026.",
- "s3-bean-am-2026": "Andrew M Bean and others, 'Reliability of LLMs as Medical Assistants for the General Public: A Randomized Preregistered Study' (2026) 32 Nature Medicine 609.",
- "s3-takita-h-2025": "Hirotaka Takita and others, 'A Systematic Review and Meta-Analysis of Diagnostic Performance Comparison Between Generative AI and Physicians' (2025) 8 npj Digital Medicine 175.",
- "s3-bedi-s-2025": "Suhana Bedi and others, 'Testing and Evaluation of Health Care Applications of Large Language Models: A Systematic Review' (2025) 333 JAMA 319.",
- "s3-wang-g-2026": "Guoyong Wang and others, 'Human–Large Language Model Collaboration in Clinical Medicine: A Systematic Review and Meta-Analysis' (2026) 9 npj Digital Medicine 195.",
- "s3-han-r-2024": "Ryan Han and others, 'Randomised Controlled Trials Evaluating Artificial Intelligence in Clinical Practice: A Scoping Review' (2024) 6 Lancet Digital Health e367.",
- "s3-plana-d-2022": "Deborah Plana and others, 'Randomized Clinical Trials of Machine Learning Interventions in Health Care: A Systematic Review' (2022) 5 JAMA Network Open e2233946.",
- "s3-lam-tyt-2022": "Thomas YT Lam and others, 'Randomized Controlled Trials of Artificial Intelligence in Clinical Practice: Systematic Review' (2022) 24 Journal of Medical Internet Research e37188.",
- "s3-ong-a-2026": "Angus Qi Chwen Ong and others, 'Artificial Intelligence in Cardiovascular Care: A Systematic Review and Meta-Analysis of Randomised Controlled Trials' (2026) 98 eClinicalMedicine 104123.",
- "s3-us-fda-artificial-intell-nd": "US Food and Drug Administration, 'Artificial Intelligence-Enabled Medical Devices' (FDA, 4 September 2026) <https://www.fda.gov/medical-devices/artificial-intelligence-enabled-medical-devices/list-artificial-intelligence-enabled-medical-devices> accessed 14 October 2026.",
- "s4-wong-a-2021": "Andrew Wong and others, 'External Validation of a Widely Implemented Proprietary Sepsis Prediction Model in Hospitalized Patients' (2021) 181 JAMA Internal Medicine 1065.",
- "s4-lyons-pg-2023": "Patrick G Lyons and others, 'Factors Associated with Variability in the Performance of a Proprietary Sepsis Prediction Model Across 9 Networked Hospitals in the US' (2023) 183 JAMA Internal Medicine 611.",
- "s4-kamran-f-2024": "Fahad Kamran and others, 'Evaluation of Sepsis Prediction Models Before Onset of Treatment' (2024) 1 NEJM AI <https://doi.org/10.1056/AIoa2300032>.",
- "s4-adams-r-2022": "Roy Adams and others, 'Prospective, Multi-Site Study of Patient Outcomes After Implementation of the TREWS Machine Learning-Based Early Warning System for Sepsis' (2022) 28 Nature Medicine 1455.",
- "s4-shashikumar-sp-2021": "Supreeth P Shashikumar and others, 'Artificial Intelligence Sepsis Prediction Algorithm Learns to Say “I Don’t Know”' (2021) 4 npj Digital Medicine 134.",
- "s4-boussina-a-2024": "Aaron Boussina and others, 'Impact of a Deep Learning Sepsis Prediction Model on Quality of Care and Survival' (2024) 7 npj Digital Medicine 14.",
- "s4-escobar-gj-2020": "Gabriel J Escobar and others, 'Automated Identification of Adults at Risk for in-Hospital Clinical Deterioration' (2020) 383 New England Journal of Medicine 1951.",
- "s4-patel-h-2026": "Hardik Patel and others, 'A Systematic Review and Meta-Analysis of Externally Validated Epic Clinical Decision Support Tools' [2026] Journal of General Internal Medicine <https://doi.org/10.1007/s11606-026-10381-y> accessed 14 October 2026.",
- "s4-lukac-pj-2025": "Paul J Lukac and others, 'Ambient AI Scribes in Clinical Practice: A Randomized Trial' (2025) 2 NEJM AI <https://doi.org/10.1056/AIoa2501000>.",
- "s4-afshar-m-2025": "Majid Afshar and others, 'A Pragmatic Randomized Controlled Trial of Ambient Artificial Intelligence to Improve Health Practitioner Well-Being' (2025) 2 NEJM AI <https://doi.org/10.1056/AIoa2500945>.",
- "s4-olson-kd-2025": "Kristine D Olson and others, 'Use of Ambient AI Scribes to Reduce Administrative Burden and Professional Burnout' (2025) 8 JAMA Network Open e2534976.",
- "s4-pearlman-k-2025": "Kevin Pearlman and others, 'Use of an AI Scribe and Electronic Health Record Efficiency' (2025) 8 JAMA Network Open e2537000.",
- "s4-tierney-aa-2024": "Aaron A Tierney and others, 'Ambient Artificial Intelligence Scribes to Alleviate the Burden of Clinical Documentation' (2024) 5 NEJM Catalyst <https://doi.org/10.1056/CAT.23.0404>.",
- "s4-garcia-p-2024": "Patricia Garcia and others, 'Artificial Intelligence–Generated Draft Replies to Patient Inbox Messages' (2024) 7 JAMA Network Open e243201.",
- "s4-tai-seale-m-2024": "Ming Tai-Seale and others, 'AI-Generated Draft Replies Integrated into Health Records and Physicians’ Electronic Communication' (2024) 7 JAMA Network Open e246565.",
- "s4-nong-p-2025": "Paige Nong and others, 'Current Use and Evaluation of Artificial Intelligence and Predictive Models in US Hospitals: Article Examines Uses and Evaluation of Artificial Intelligence and Predictive Models in US Hospitals' (2025) 44 Health Affairs 90.",
- "s4-everson-j-2025": "Jordan Everson, Paige Nong and Chelsea Richwine, 'Uptake of Generative AI Integrated with Electronic Health Records in US Hospitals' (2025) 8 JAMA Network Open e2549463.",
- "s4-american-medical-associa-2026": "American Medical Association, *2026 Physician Survey on Augmented Intelligence* (AMA 2026) <https://www.ama-assn.org/practice-management/digital-health/more-80-physicians-use-ai-professionally-ama-survey> accessed 14 October 2026.",
- "s4-tarabichi-y-2023": "Yasir Tarabichi and others, 'Reducing Disparities in No Show Rates Using Predictive Model-Driven Live Appointment Reminders for at-Risk Patients: A Randomized Controlled Quality Improvement Initiative' (2023) 38 Journal of General Internal Medicine 2921.",
- "s4-oikonomidi-t-2023": "Theodora Oikonomidi and others, 'Predictive Model-Based Interventions to Reduce Outpatient No-Shows: A Rapid Systematic Review' (2023) 30 Journal of the American Medical Informatics Association 559.",
- "s4-stromblad-ct-2021": "Christopher T Strömblad and others, 'Effect of a Predictive Model on Planned Surgical Duration Accuracy, Patient Wait Time, and Use of Presurgical Resources: A Randomized Clinical Trial' (2021) 156 JAMA Surgery 315.",
- "s4-king-z-2022": "Zella King and others, 'Machine Learning for Real-Time Aggregated Prediction of Hospital Admission for Emergency Patients' (2022) 5 npj Digital Medicine 104.",
- "s4-soroush-a-2024": "Ali Soroush and others, 'Large Language Models Are Poor Medical Coders — Benchmarking of Medical Code Querying' (2024) 1 NEJM AI <https://doi.org/10.1056/AIdbp2300040>.",
- "s4-goddard-k-2012": "Kate Goddard, Abdul Roudsari and Jeremy C Wyatt, 'Automation Bias: A Systematic Review of Frequency, Effect Mediators, and Mitigators' (2012) 19 Journal of the American Medical Informatics Association 121.",
- "s4-dratsch-t-2023": "Thomas Dratsch and others, 'Automation Bias in Mammography: The Impact of Artificial Intelligence BI-RADS Suggestions on Reader Performance' (2023) 307 Radiology e222176.",
- "s4-qazi-ia-2026": "Ihsan Ayyub Qazi and others, 'Automation Bias in Large Language Model–Assisted Diagnostic Reasoning Among Physicians Trained in AI Literacy — A Randomized Clinical Trial' (2026) 3 NEJM AI <https://doi.org/10.1056/AIoa2501001>.",
- "s5-jumper-j-2021": "John Jumper and others, 'Highly Accurate Protein Structure Prediction with AlphaFold' (2021) 596 Nature 583.",
- "s5-baek-m-2021": "Minkyung Baek and others, 'Accurate Prediction of Protein Structures and Interactions Using a Three-Track Neural Network' (2021) 373 Science 871.",
- "s5-lin-z-2023": "Zeming Lin and others, 'Evolutionary-Scale Prediction of Atomic-Level Protein Structure with a Language Model' (2023) 379 Science 1123.",
- "s5-watson-jl-2023": "Joseph L Watson and others, 'De Novo Design of Protein Structure and Function with RFdiffusion' (2023) 620 Nature 1089.",
- "s5-abramson-j-2024": "Josh Abramson and others, 'Accurate Structure Prediction of Biomolecular Interactions with AlphaFold 3' (2024) 630 Nature 493.",
- "s5-royal-swedish-academy-of-2024": "Royal Swedish Academy of Sciences, 'The Nobel Prize in Chemistry 2024' (press release, 9 October 2024) <https://www.nobelprize.org/prizes/chemistry/2024/press-release/> accessed 14 October 2026.",
- "s5-hayes-t-2025": "Thomas Hayes and others, 'Simulating 500 Million Years of Evolution with a Language Model' (2025) 387 Science 850.",
- "s5-wohlwend-j-2024": "Jeremy Wohlwend and others, 'Boltz-1 Democratizing Biomolecular Interaction Modeling' (bioRxiv preprint, 2024) <https://doi.org/10.1101/2024.11.19.624167> accessed 14 October 2026.",
- "s5-passaro-s-2025": "Saro Passaro and others, 'Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction' (bioRxiv preprint, 2025) <https://doi.org/10.1101/2025.06.14.659707> accessed 14 October 2026.",
- "s5-bennett-nr-2026": "Nathaniel R Bennett and others, 'Atomically Accurate De Novo Design of Antibodies with RFdiffusion' (2026) 649 Nature 183.",
- "s5-ren-f-2025": "Feng Ren and others, 'A Small-Molecule TNIK Inhibitor Targets Fibrosis in Preclinical and Clinical Models' (2025) 43 Nature Biotechnology 63.",
- "s5-xu-z-2025": "Zuojun Xu and others, 'A Generative AI-Discovered TNIK Inhibitor for Idiopathic Pulmonary Fibrosis: A Randomized Phase 2a Trial' (2025) 31 Nature Medicine 2602.",
- "s5-jayatunga-mkp-2024": "Madura KP Jayatunga and others, 'How Successful Are AI-Discovered Drugs in Clinical Trials? A First Analysis and Emerging Lessons' (2024) 29 Drug Discovery Today 104009.",
- "s5-stokes-jm-2020": "Jonathan M Stokes and others, 'A Deep Learning Approach to Antibiotic Discovery' (2020) 180 Cell 688.",
- "s5-liu-g-2023": "Gary Liu and others, 'Deep Learning-Guided Discovery of an Antibiotic Targeting Acinetobacter Baumannii' (2023) 19 Nature Chemical Biology 1342.",
- "s5-wong-f-2024": "Felix Wong and others, 'Discovery of a Structural Class of Antibiotics with Explainable Deep Learning' (2024) 626 Nature 177.",
- "s5-krishnan-a-2025": "Aarti Krishnan and others, 'A Generative Deep Learning Approach to De Novo Antibiotic Design' (2025) 188 Cell 5962.",
- "s5-jin-q-2024": "Qiao Jin and others, 'Matching Patients to Clinical Trials with Large Language Models' (2024) 15 Nature Communications 9074.",
- "s5-bordukova-m-2024": "Maria Bordukova and others, 'Generative Artificial Intelligence Empowers Digital Twins in Drug Discovery and Clinical Trials' (2024) 19 Expert Opinion on Drug Discovery 33.",
- "s5-ema-chmp-2022": "European Medicines Agency, Committee for Medicinal Products for Human Use, *Qualification Opinion for Prognostic Covariate Adjustment (PROCOVA™)* (EMA 2022) <https://www.ema.europa.eu/documents/regulatory-procedural-guideline/qualification-opinion-prognostic-covariate-adjustment-procovatm_en.pdf> accessed 14 October 2026.",
- "s5-us-fda-2025": "US Food and Drug Administration, *Considerations for the Use of Artificial Intelligence to Support Regulatory Decision-Making for Drug and Biological Products* (Draft Guidance for Industry, January 2025) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/considerations-use-artificial-intelligence-support-regulatory-decision-making-drug-and-biological> accessed 14 October 2026.",
- "s5-cheng-j-2023": "Jun Cheng and others, 'Accurate Proteome-Wide Missense Variant Effect Prediction with AlphaMissense' (2023) 381 Science eadg7492.",
- "s5-nguyen-e-2024": "Eric Nguyen and others, 'Sequence Modeling and Design from Molecular to Genome Scale with Evo' (2024) 386 Science eado9336.",
- "s5-brixi-g-2026": "Garyk Brixi and others, 'Genome Modelling and Design Across All Domains of Life with Evo 2' (2026) 652 Nature 1349.",
- "s5-avsec-z-2026": "Žiga Avsec and others, 'Advancing Regulatory Variant Effect Prediction with AlphaGenome' (2026) 649 Nature 1206.",
- "s5-shmatko-a-2025": "Artem Shmatko and others, 'Learning the Natural History of Human Disease with Generative Transformers' (2025) 647 Nature 248.",
- "s5-bunne-c-2024": "Charlotte Bunne and others, 'How to Build the Virtual Cell with Artificial Intelligence: Priorities and Opportunities' (2024) 187 Cell 7045.",
- "s5-theodoris-cv-2023": "Christina V Theodoris and others, 'Transfer Learning Enables Predictions in Network Biology' (2023) 618 Nature 616.",
- "s5-cui-h-2024": "Haotian Cui and others, 'scGPT: Toward Building a Foundation Model for Single-Cell Multi-Omics Using Generative AI' (2024) 21 Nature Methods 1470.",
- "s5-kedzierska-kz-2025": "Kasia Z Kedzierska and others, 'Zero-Shot Evaluation Reveals Limitations of Single-Cell Foundation Models' (2025) 26 Genome Biology 101.",
- "s5-ahlmann-eltze-c-2025": "Constantin Ahlmann-Eltze, Wolfgang Huber and Simon Anders, 'Deep-Learning-Based Gene Perturbation Effect Prediction Does Not yet Outperform Simple Linear Baselines' (2025) 22 Nature Methods 1657.",
- "s5-boiko-da-2023": "Daniil A Boiko and others, 'Autonomous Chemical Research with Large Language Models' (2023) 624 Nature 570.",
- "s5-szymanski-nj-2023": "Nathan J Szymanski and others, 'An Autonomous Laboratory for the Accelerated Synthesis of Inorganic Materials' (2023) 624 Nature 86.",
- "s5-gottweis-j-2026": "Juraj Gottweis and others, 'Accelerating Scientific Discovery with Co-Scientist' (2026) 655 Nature 487.",
- "s5-ghareeb-ae-2026": "Ali E Ghareeb and others, 'A Multi-Agent System for Automating Scientific Discovery' (2026) 655 Nature 497.",
- "s5-swanson-k-2025": "Kyle Swanson and others, 'The Virtual Lab of AI Agents Designs New SARS-CoV-2 Nanobodies' (2025) 646 Nature 716.",
- "s5-lu-c-2026": "Chris Lu and others, 'Towards End-To-End Automation of AI Research' (2026) 651 Nature 914.",
- "s6-bastian-h-2010": "Hilda Bastian, Paul Glasziou and Iain Chalmers, 'Seventy-Five Trials and Eleven Systematic Reviews a Day: How Will We Ever Keep Up?' (2010) 7 PLoS Medicine e1000326.",
- "s6-bornmann-l-2021": "Lutz Bornmann, Robin Haunschild and Rüdiger Mutz, 'Growth Rates of Modern Science: A Latent Piecewise Growth Curve Approach to Model Publication Numbers from Established and New Literature Databases' (2021) 8 Humanities and Social Sciences Communications 224.",
- "s6-hanson-ma-2024": "Mark A Hanson and others, 'The Strain on Scientific Publishing' (2024) 5 Quantitative Science Studies 823.",
- "s6-national-library-of-medi-nd": "National Library of Medicine, 'MEDLINE/PubMed Production Statistics' (NLM) <https://www.nlm.nih.gov/bsd/medline_pubmed_production_stats.html> accessed 14 October 2026.",
- "s6-borah-r-2017": "Rohit Borah and others, 'Analysis of the Time and Workers Needed to Conduct Systematic Reviews of Medical Interventions Using Data from the PROSPERO Registry' (2017) 7 BMJ Open e012545.",
- "s6-chalmers-i-2009": "Iain Chalmers and Paul Glasziou, 'Avoidable Waste in the Production and Reporting of Research Evidence' (2009) 374 Lancet 86.",
- "s6-glasziou-p-2014": "Paul Glasziou and others, 'Reducing Waste from Incomplete or Unusable Reports of Biomedical Research' (2014) 383 Lancet 267.",
- "s6-ioannidis-jpa-2016": "John PA Ioannidis, 'The Mass Production of Redundant, Misleading, and Conflicted Systematic Reviews and Meta‐analyses' (2016) 94 Milbank Quarterly 485.",
- "s6-van-noorden-r-2023": "Richard Van Noorden, 'More than 10,000 Research Papers Were Retracted in 2023 — A New Record' (2023) 624 Nature 479.",
- "s6-richardson-rak-2025": "Reese AK Richardson and others, 'The Entities Enabling Scientific Fraud at Scale Are Large, Resilient, and Growing Rapidly' (2025) 122 Proceedings of the National Academy of Sciences e2420092122.",
- "s6-byrne-ja-2020": "Jennifer A Byrne and Jana Christopher, 'Digital Magic, or the Dark Arts of the 21st Century—How Can Journals and Peer Reviewers Detect Manuscripts and Publications from Paper Mills?' (2020) 594 FEBS Letters 583.",
- "s6-suchak-t-2025": "Tulsi Suchak and others, 'Explosion of Formulaic Research Articles, Including Inappropriate Study Designs and False Discoveries, Based on the NHANES US National Health Database' (2025) 23 PLOS Biology e3003152.",
- "s6-kobak-d-2025": "Dmitry Kobak and others, 'Delving into LLM-Assisted Writing in Biomedical Publications Through Excess Vocabulary' (2025) 11 Science Advances eadt3813.",
- "s6-liang-w-2025": "Weixin Liang and others, 'Quantifying Large Language Model Usage in Scientific Papers' (2025) 9 Nature Human Behaviour 2599.",
- "s6-tsafnat-g-2014": "Guy Tsafnat and others, 'Systematic Review Automation Technologies' (2014) 3 Systematic Reviews 74.",
- "s6-marshall-ij-2016": "Iain J Marshall, Joël Kuiper and Byron C Wallace, 'RobotReviewer: Evaluation of a System for Automatically Assessing Bias in Clinical Trials' (2016) 23 Journal of the American Medical Informatics Association 193.",
- "s6-ouzzani-m-2016": "Mourad Ouzzani and others, 'Rayyan—A Web and Mobile App for Systematic Reviews' (2016) 5 Systematic Reviews 210.",
- "s6-marshall-ij-2018": "Iain J Marshall and others, 'Machine Learning for Identifying Randomized Controlled Trials: An Evaluation and Practitioner's Guide' (2018) 9 Research Synthesis Methods 602.",
- "s6-marshall-ij-2019": "Iain J Marshall and Byron C Wallace, 'Toward Systematic Review Automation: A Practical Guide to Using Machine Learning Tools in Research Synthesis' (2019) 8 Systematic Reviews 163.",
- "s6-o-connor-am-2019": "Annette M O’Connor and others, 'A Question of Trust: Can We Build an Evidence Base to Gain Trust in Systematic Review Automation Technologies?' (2019) 8 Systematic Reviews 143.",
- "s6-van-de-schoot-r-2021": "Rens van de Schoot and others, 'An Open Source Machine Learning Framework for Efficient and Transparent Systematic Reviews' (2021) 3 Nature Machine Intelligence 125.",
- "s6-thomas-j-2021": "James Thomas and others, 'Machine Learning Reduced Workload with Minimal Risk of Missing Studies: Development and Evaluation of a Randomized Controlled Trial Classifier for Cochrane Reviews' (2021) 133 Journal of Clinical Epidemiology 140.",
- "s6-guo-e-2024": "Eddie Guo and others, 'Automated Paper Screening for Clinical Reviews Using Large Language Models: Data Analysis Study' (2024) 26 Journal of Medical Internet Research e48996.",
- "s6-khraisha-q-2024": "Qusai Khraisha and others, 'Can Large Language Models Replace Humans in Systematic Reviews? Evaluating GPT ‐4's Efficacy in Screening and Extracting Data from Peer‐reviewed and Grey Literature in Multiple Languages' (2024) 15 Research Synthesis Methods 616.",
- "s6-gartlehner-g-2024": "Gerald Gartlehner and others, 'Data Extraction for Evidence Synthesis Using a Large Language Model: A Proof‐of‐concept Study' (2024) 15 Research Synthesis Methods 576.",
- "s6-lai-h-2024": "Honghao Lai and others, 'Assessing the Risk of Bias in Randomized Clinical Trials with Large Language Models' (2024) 7 JAMA Network Open e2412687.",
- "s6-lieberum-jl-2025": "Judith-Lisa Lieberum and others, 'Large Language Models for Conducting Systematic Reviews: On the Rise, but Not yet Ready for Use—A Scoping Review' (2025) 181 Journal of Clinical Epidemiology 111746.",
- "s6-wang-z-2025": "Zifeng Wang and others, 'Accelerating Clinical Evidence Synthesis with Large Language Models' (2025) 8 npj Digital Medicine 509.",
- "s6-cao-c-2025": "Christian Cao and others, 'Automation of Systematic Reviews with Large Language Models' (medRxiv preprint, 2025) <https://doi.org/10.1101/2025.06.13.25329541> accessed 14 October 2026.",
- "s6-polzak-c-2026": "Christopher Polzak and others, 'Can Large Language Models Match the Conclusions of Systematic Reviews?' (International Conference on Learning Representations, 2026) <https://mlanthology.org/iclr/2026/polzak2026iclr-large/> accessed 14 October 2026.",
- "s6-thomas-j-2024": "James Thomas, Ella Flemyng and Anna Noel-Storr, 'Responsible Use of AI in Evidence SynthEsis (RAISE): Recommendations and Guidance' (OSF, 2025) <https://doi.org/10.17605/OSF.IO/FWAUD> accessed 14 October 2026.",
- "s6-flemyng-e-2025": "Ella Flemyng and others, 'Position Statement on Artificial Intelligence (AI) Use in Evidence Synthesis Across Cochrane, the Campbell Collaboration, JBI, and the Collaboration for Environmental Evidence 2025' (2025) 23 JBI Evidence Synthesis 2162.",
- "s6-walters-wh-2023": "William H Walters and Esther Isabelle Wilder, 'Fabrication and Errors in the Bibliographic Citations Generated by ChatGPT' (2023) 13 Scientific Reports 14045.",
- "s6-chelli-m-2024": "Mikaël Chelli and others, 'Hallucination Rates and Reference Accuracy of ChatGPT and Bard for Systematic Reviews: Comparative Analysis' (2024) 26 Journal of Medical Internet Research e53164.",
- "s6-ioannidis-jpa-2005": "John PA Ioannidis, 'Why Most Published Research Findings Are False' (2005) 2 PLoS Medicine e124.",
- "s6-open-science-collaborati-2015": "Open Science Collaboration, 'Estimating the Reproducibility of Psychological Science' (2015) 349 Science aac4716.",
- "s6-errington-tm-2021": "Timothy M Errington and others, 'Investigating the Replicability of Preclinical Cancer Biology' (2021) 10 eLife e71601.",
- "s6-kapoor-s-2023": "Sayash Kapoor and Arvind Narayanan, 'Leakage and the Reproducibility Crisis in Machine-Learning-Based Science' (2023) 4 Patterns 100804.",
- "s6-nuijten-mb-2016": "Michèle B Nuijten and others, 'The Prevalence of Statistical Reporting Errors in Psychology (1985–2013)' (2016) 48 Behavior Research Methods 1205.",
- "s6-bik-em-2016": "Elisabeth M Bik, Arturo Casadevall and Ferric C Fang, 'The Prevalence of Inappropriate Image Duplication in Biomedical Research Publications' (2016) 7 mBio e00809-16.",
- "s6-bucci-em-2018": "Enrico M Bucci, 'Automatic Detection of Image Manipulations in the Biomedical Literature' (2018) 9 Cell Death & Disease 400.",
- "s6-gibney-e-2025": "Elizabeth Gibney, 'AI Tools Are Spotting Errors in Research Papers: Inside a Growing Movement' [2025] Nature <https://doi.org/10.1038/d41586-025-00648-5> accessed 14 October 2026.",
- "s6-starace-g-2025": "Giulio Starace and others, 'PaperBench: Evaluating AI's Ability to Replicate AI Research' in *Proceedings of the 42nd International Conference on Machine Learning* (PMLR 267, 2025) 56843.",
- "s6-siegel-zs-2024": "Zachary S Siegel and others, 'CORE-Bench: Fostering the Credibility of Published Research Through a Computational Reproducibility Agent Benchmark' [2024] Transactions on Machine Learning Research <https://arxiv.org/abs/2409.11363> accessed 14 October 2026.",
- "s6-hu-c-2025": "Chuxuan Hu and others, 'REPRO-Bench: Can Agentic AI Systems Assess the Reproducibility of Social Science Research?' in *Findings of the Association for Computational Linguistics: ACL 2025* (Association for Computational Linguistics 2025) 23616.",
- "s6-kohler-b-2026": "Benjamin Kohler and others, 'Read the Paper, Write the Code: Agentic Reproduction of Social-Science Results' (arXiv:2604.21965, 2026) <https://arxiv.org/abs/2604.21965> accessed 14 October 2026.",
- "s6-alizadeh-m-2026": "Meysam Alizadeh and others, 'AI Coding Agents Can Reproduce Social Science Findings' (arXiv:2606.11447, 2026) <https://arxiv.org/abs/2606.11447> accessed 14 October 2026.",
- "s6-holtdirk-t-2026": "Tobias Holtdirk and others, 'Automated Reproducibility Assessments in the Social and Behavioral Sciences Using Large Language Models' (arXiv:2606.13670, 2026) <https://arxiv.org/abs/2606.13670> accessed 14 October 2026.",
- "s6-liang-w-2024": "Weixin Liang and others, 'Can Large Language Models Provide Useful Feedback on Research Papers? A Large-Scale Empirical Analysis' (2024) 1 NEJM AI AIoa2400196.",
- "s6-liang-w-2024-2": "Weixin Liang and others, 'Monitoring AI-Modified Content at Scale: A Case Study on the Impact of ChatGPT on AI Conference Peer Reviews' in *Proceedings of the 41st International Conference on Machine Learning* (PMLR 235, 2024) 29575.",
- "s6-thakkar-n-2026": "Nitya Thakkar and others, 'A Large-Scale Randomized Study of Large Language Model Feedback in Peer Review' (2026) 8 Nature Machine Intelligence 326.",
- "s6-hosseini-m-2023": "Mohammad Hosseini and Serge PJM Horbach, 'Fighting Reviewer Fatigue or Amplifying Bias? Considerations and Recommendations for Use of ChatGPT and Other Large Language Models in Scholarly Peer Review' (2023) 8 Research Integrity and Peer Review 4.",
- "s6-gibney-e-2025-2": "Elizabeth Gibney, 'Scientists Hide Messages in Papers to Game AI Peer Review' (2025) 643 Nature 887.",
- "s7-elliott-jh-2014": "Julian H Elliott and others, 'Living Systematic Reviews: An Emerging Opportunity to Narrow the Evidence-Practice Gap' (2014) 11 PLoS Medicine e1001603.",
- "s7-elliott-jh-2017": "Julian H Elliott and others, 'Living Systematic Review: 1. Introduction—The Why, What, When, and How' (2017) 91 Journal of Clinical Epidemiology 23.",
- "s7-thomas-j-2017": "James Thomas and others, 'Living Systematic Reviews: 2. Combining Human and Machine Effort' (2017) 91 Journal of Clinical Epidemiology 31.",
- "s7-tendal-b-2021": "Britta Tendal and others, 'Weekly Updates of National Living Evidence-Based Guidelines: Methods for the Australian Living Guidelines for Care of People with COVID-19' (2021) 131 Journal of Clinical Epidemiology 11.",
- "s7-siemieniuk-ra-2020": "Reed AC Siemieniuk and others, 'Drug Treatments for Covid-19: Living Systematic Review and Network Meta-Analysis' (2020) 370 BMJ m2980.",
- "s7-agarwal-a-2020": "Arnav Agarwal and others, 'A Living WHO Guideline on Drugs for Covid-19 (2020-2023)' (2020) 370 BMJ m3379.",
- "s7-elliott-j-2021": "Julian Elliott and others, 'Decision Makers Need Constantly Updated Evidence Synthesis' (2021) 600 Nature 383.",
- "s7-wiles-l-2024": "Louise Wiles and others, 'Is It Possible to Make ‘Living’ Guidelines? An Evaluation of the Australian Living Stroke Guidelines' (2024) 24 BMC Health Services Research 419.",
- "s7-asai-a-2026": "Akari Asai and others, 'Synthesizing Scientific Literature with Retrieval-Augmented Language Models' (2026) 650 Nature 857.",
- "s7-skarlinski-md-2024": "Michael D Skarlinski and others, 'Language Agents Achieve Superhuman Synthesis of Scientific Knowledge' (arXiv:2409.13740, 2024) <https://arxiv.org/abs/2409.13740> accessed 14 October 2026.",
- "s7-rao-d-2026": "Delip Rao, Eric Wong and Chris Callison-Burch, 'Detecting and Correcting Reference Hallucinations in Commercial LLMs and Deep Research Agents' (arXiv:2604.03173, 2026) <https://arxiv.org/abs/2604.03173> accessed 14 October 2026.",
- "s8-obermeyer-z-2019": "Ziad Obermeyer and others, 'Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations' (2019) 366 Science 447.",
- "s8-omiye-ja-2023": "Jesutofunmi A Omiye and others, 'Large Language Models Propagate Race-Based Medicine' (2023) 6 npj Digital Medicine 195.",
- "s8-zack-t-2024": "Travis Zack and others, 'Assessing the Potential of GPT-4 to Perpetuate Racial and Gender Biases in Health Care: A Model Evaluation Study' (2024) 6 Lancet Digital Health e12.",
- "s8-asgari-e-2025": "Elham Asgari and others, 'A Framework to Assess Clinical Safety and Hallucination Rates of LLMs for Medical Text Summarisation' (2025) 8 npj Digital Medicine 274.",
- "s8-omar-m-2025": "Mahmud Omar and others, 'Multi-Model Assurance Analysis Showing Large Language Models Are Highly Vulnerable to Adversarial Hallucination Attacks During Clinical Decision Support' (2025) 5 Communications Medicine 330.",
- "s8-price-wn-ii-2019": "W Nicholson Price and I Glenn Cohen, 'Privacy in the Age of Medical Big Data' (2019) 25 Nature Medicine 37.",
- "s8-gerke-s-2026": "Sara Gerke and David A Simon, 'Privacy Considerations of Artificial Intelligence Scribes' (2026) 3 NEJM AI <https://doi.org/10.1056/AIpc2501401>.",
- "s8-finlayson-sg-2021": "Samuel G Finlayson and others, 'The Clinician and Dataset Shift in Artificial Intelligence' (2021) 385 New England Journal of Medicine 283.",
- "s8-wong-a-2021": "Andrew Wong and others, 'Quantification of Sepsis Model Alerts in 24 US Hospitals Before and During the COVID-19 Pandemic' (2021) 4 JAMA Network Open e2135286.",
- "s8-subasri-v-2025": "Vallijah Subasri and others, 'Detecting and Remediating Harmful Data Shifts for the Responsible Deployment of Clinical AI Models' (2025) 8 JAMA Network Open e2513685.",
- "s8-wu-e-2021": "Eric Wu and others, 'How Medical AI Devices Are Evaluated: Limitations and Recommendations from an Analysis of FDA Approvals' (2021) 27 Nature Medicine 582.",
- "s8-youssef-a-2023": "Alexey Youssef and others, 'External Validation of AI Models in Health Should Be Replaced with Recurring Local Validation' (2023) 29 Nature Medicine 2686.",
- "s8-shah-nh-2024": "Nigam H Shah and others, 'A Nationwide Network of Health AI Assurance Laboratories' (2024) 331 JAMA 245.",
- "s8-joint-commission-coaliti-2025": "The Joint Commission and Coalition for Health AI, *Guidance on the Responsible Use of AI in Healthcare (RUAIH)* (2025) <https://www.chai.org/news/joint-commission-and-coalition-for-health-ai-chai-release-initial-guidance> accessed 14 October 2026.",
- "s8-regulation-nd": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act) [2024] OJ L2024/1689.",
- "s8-regulation-nd-2": "Regulation (EU) 2026/1744 [full title and date to be confirmed against the Official Journal] [2026] OJ L2026/1744.",
- "s8-mdcg-2025-6-ai-board-2025": "Medical Device Coordination Group and Artificial Intelligence Board, 'MDCG 2025-6: FAQ on Interplay between the MDR/IVDR and the AI Act' (European Commission 2025) <https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en> accessed 14 October 2026.",
- "s8-van-kolfschooten-h-2024": "Hannah van Kolfschooten and Janneke van Oirschot, 'The EU Artificial Intelligence Act (2024): Implications for Healthcare' (2024) 149 Health Policy 105152.",
- "s8-us-fda-2024": "US Food and Drug Administration, *Marketing Submission Recommendations for a Predetermined Change Control Plan for Artificial Intelligence-Enabled Device Software Functions* (Guidance for Industry and Food and Drug Administration Staff, December 2024) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence> accessed 14 October 2026.",
- "s8-us-fda-2025": "US Food and Drug Administration, *Artificial Intelligence-Enabled Device Software Functions: Lifecycle Management and Marketing Submission Recommendations* (Draft Guidance for Industry and Food and Drug Administration Staff, January 2025) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/artificial-intelligence-enabled-device-software-functions-lifecycle-management-and-marketing> accessed 14 October 2026.",
- "s8-us-fda-2026": "US Food and Drug Administration, *Clinical Decision Support Software* (Guidance for Industry and Food and Drug Administration Staff, January 2026) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software> accessed 14 October 2026.",
- "s8-world-health-organizatio-2024": "World Health Organization, *Ethics and Governance of Artificial Intelligence for Health: Guidance on Large Multi-Modal Models* (WHO 2024) <https://www.who.int/publications/i/item/9789240084759> accessed 14 October 2026.",
- "s8-collins-gs-2024": "Gary S Collins and others, 'TRIPOD+AI Statement: Updated Guidance for Reporting Clinical Prediction Models That Use Regression or Machine Learning Methods' (2024) 385 BMJ e078378.",
- "s8-gallifant-j-2025": "Jack Gallifant and others, 'The TRIPOD-LLM Reporting Guideline for Studies Using Large Language Models' (2025) 31 Nature Medicine 60.",
- "s8-liu-x-2020": "Xiaoxuan Liu and others, 'Reporting Guidelines for Clinical Trial Reports for Interventions Involving Artificial Intelligence: The CONSORT-AI Extension' (2020) 26 Nature Medicine 1364.",
- "s8-cruz-rivera-s-2020": "Samantha Cruz Rivera and others, 'Guidelines for Clinical Trial Protocols for Interventions Involving Artificial Intelligence: The SPIRIT-AI Extension' (2020) 26 Nature Medicine 1351.",
- "s8-vasey-b-2022": "Baptiste Vasey and others, 'Reporting Guideline for the Early-Stage Clinical Evaluation of Decision Support Systems Driven by Artificial Intelligence: DECIDE-AI' (2022) 28 Nature Medicine 924.",
- "s8-chart-collaborative-2025": "The CHART Collaborative, 'Reporting Guideline for Chatbot Health Advice Studies: The Chatbot Assessment Reporting Tool (CHART) Statement' (2025) 4 BMJ Medicine e001632.",
- "s8-lekadir-k-2025": "Karim Lekadir and others, 'FUTURE-AI: International Consensus Guideline for Trustworthy and Deployable Artificial Intelligence in Healthcare' (2025) 388 BMJ e081554."
+ "s2-topol-ej-2019": {
+  "full": "Eric J Topol, 'High-Performance Medicine: The Convergence of Human and Artificial Intelligence' (2019) 25 Nature Medicine 44.",
+  "short": "Topol"
+ },
+ "s2-rajkomar-a-2019": {
+  "full": "Alvin Rajkomar, Jeffrey Dean and Isaac Kohane, 'Machine Learning in Medicine' (2019) 380 New England Journal of Medicine 1347.",
+  "short": "Rajkomar, Dean and Kohane"
+ },
+ "s2-rajpurkar-p-2022": {
+  "full": "Pranav Rajpurkar and others, 'AI in Health and Medicine' (2022) 28 Nature Medicine 31.",
+  "short": "Rajpurkar and others"
+ },
+ "s2-acosta-jn-2022": {
+  "full": "Julián N Acosta and others, 'Multimodal Biomedical AI' (2022) 28 Nature Medicine 1773.",
+  "short": "Acosta and others"
+ },
+ "s2-moor-m-2023": {
+  "full": "Michael Moor and others, 'Foundation Models for Generalist Medical Artificial Intelligence' (2023) 616 Nature 259.",
+  "short": "Moor and others"
+ },
+ "s2-singhal-k-2023": {
+  "full": "Karan Singhal and others, 'Large Language Models Encode Clinical Knowledge' (2023) 620 Nature 172.",
+  "short": "Singhal and others, 'Large Language Models Encode Clinical…'"
+ },
+ "s2-singhal-k-2025": {
+  "full": "Karan Singhal and others, 'Toward Expert-Level Medical Question Answering with Large Language Models' (2025) 31 Nature Medicine 943.",
+  "short": "Singhal and others, 'Toward Expert-Level Medical Question Answering…'"
+ },
+ "s2-thirunavukarasu-aj-2023": {
+  "full": "Arun James Thirunavukarasu and others, 'Large Language Models in Medicine' (2023) 29 Nature Medicine 1930.",
+  "short": "Thirunavukarasu and others"
+ },
+ "s2-tu-t-2024": {
+  "full": "Tao Tu and others, 'Towards Generalist Biomedical AI' (2024) 1 NEJM AI <https://doi.org/10.1056/AIoa2300138>.",
+  "short": "Tu and others, 'Towards Generalist Biomedical AI'"
+ },
+ "s2-rao-vm-2025": {
+  "full": "Vishwanatha M Rao and others, 'Multimodal Generative AI for Medical Image Interpretation' (2025) 639 Nature 888.",
+  "short": "Rao and others"
+ },
+ "s2-zou-j-2025": {
+  "full": "James Zou and Eric J Topol, 'The Rise of Agentic AI Teammates in Medicine' (2025) 405 Lancet 457.",
+  "short": "Zou and Topol"
+ },
+ "s2-qiu-j-2024": {
+  "full": "Jianing Qiu and others, 'LLM-Based Agentic Systems in Medicine and Healthcare' (2024) 6 Nature Machine Intelligence 1418.",
+  "short": "Qiu and others"
+ },
+ "s2-gao-s-2024": {
+  "full": "Shanghua Gao and others, 'Empowering Biomedical Discovery with AI Agents' (2024) 187 Cell 6125.",
+  "short": "Gao and others"
+ },
+ "s2-ferber-d-2025": {
+  "full": "Dyke Ferber and others, 'Development and Validation of an Autonomous Artificial Intelligence Agent for Clinical Decision-Making in Oncology' (2025) 6 Nature Cancer 1337.",
+  "short": "Ferber and others"
+ },
+ "s2-sevilla-j-2022": {
+  "full": "Jaime Sevilla and others, 'Compute Trends Across Three Eras of Machine Learning' in *2022 International Joint Conference on Neural Networks (IJCNN)* (IEEE 2022) 1.",
+  "short": "Sevilla and others"
+ },
+ "s2-stanford-hai-2026": {
+  "full": "Stanford Institute for Human-Centered Artificial Intelligence, *AI Index Report 2026* (Stanford University 2026) ch 6 'Medicine' <https://hai.stanford.edu/ai-index/2026-ai-index-report/medicine> accessed 14 October 2026.",
+  "short": "Stanford HAI, *AI Index Report 2026*"
+ },
+ "s3-gulshan-v-2016": {
+  "full": "Varun Gulshan and others, 'Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs' (2016) 316 JAMA 2402.",
+  "short": "Gulshan and others"
+ },
+ "s3-esteva-a-2017": {
+  "full": "Andre Esteva and others, 'Dermatologist-Level Classification of Skin Cancer with Deep Neural Networks' (2017) 542 Nature 115.",
+  "short": "Esteva and others"
+ },
+ "s3-lang-k-2023": {
+  "full": "Kristina Lång and others, 'Artificial Intelligence-Supported Screen Reading versus Standard Double Reading in the Mammography Screening with Artificial Intelligence Trial (MASAI): A Clinical Safety Analysis of a Randomised, Controlled, Non-Inferiority, Single-Blinded, Screening Accuracy Study' (2023) 24 Lancet Oncology 936.",
+  "short": "Lång and others"
+ },
+ "s3-hernstrom-v-2025": {
+  "full": "Veronica Hernström and others, 'Screening Performance and Characteristics of Breast Cancer Detected in the Mammography Screening with Artificial Intelligence Trial (MASAI): A Randomised, Controlled, Parallel-Group, Non-Inferiority, Single-Blinded, Screening Accuracy Study' (2025) 7 Lancet Digital Health e175.",
+  "short": "Hernström and others"
+ },
+ "s3-gommers-j-2026": {
+  "full": "Jessie Gommers and others, 'Interval Cancer, Sensitivity, and Specificity Comparing AI-Supported Mammography Screening with Standard Double Reading Without AI in the MASAI Study: A Randomised, Controlled, Non-Inferiority, Single-Blinded, Population-Based, Screening-Accuracy Trial' (2026) 407 Lancet 505.",
+  "short": "Gommers and others"
+ },
+ "s3-eisemann-n-2025": {
+  "full": "Nora Eisemann and others, 'Nationwide Real-World Implementation of AI for Cancer Detection in Population-Based Mammography Screening' (2025) 31 Nature Medicine 917.",
+  "short": "Eisemann and others"
+ },
+ "s3-soleymanjahi-s-2024": {
+  "full": "Saeed Soleymanjahi and others, 'Artificial Intelligence–Assisted Colonoscopy for Polyp Detection: A Systematic Review and Meta-Analysis' (2024) 177 Annals of Internal Medicine 1652.",
+  "short": "Soleymanjahi and others"
+ },
+ "s3-budzyn-k-2025": {
+  "full": "Krzysztof Budzyń and others, 'Endoscopist Deskilling Risk After Exposure to Artificial Intelligence in Colonoscopy: A Multicentre, Observational Study' (2025) 10 Lancet Gastroenterology & Hepatology 896.",
+  "short": "Budzyń and others"
+ },
+ "s3-chen-rj-2024": {
+  "full": "Richard J Chen and others, 'Towards a General-Purpose Foundation Model for Computational Pathology' (2024) 30 Nature Medicine 850.",
+  "short": "Chen and others"
+ },
+ "s3-lu-my-2024": {
+  "full": "Ming Y Lu and others, 'A Visual-Language Foundation Model for Computational Pathology' (2024) 30 Nature Medicine 863.",
+  "short": "Lu and others, 'A Visual-Language Foundation Model for…'"
+ },
+ "s3-vorontsov-e-2024": {
+  "full": "Eugene Vorontsov and others, 'A Foundation Model for Clinical-Grade Computational Pathology and Rare Cancers Detection' (2024) 30 Nature Medicine 2924.",
+  "short": "Vorontsov and others"
+ },
+ "s3-xu-h-2024": {
+  "full": "Hanwen Xu and others, 'A Whole-Slide Foundation Model for Digital Pathology from Real-World Data' (2024) 630 Nature 181.",
+  "short": "Xu and others, 'A Whole-Slide Foundation Model for…'"
+ },
+ "s3-zhou-y-2023": {
+  "full": "Yukun Zhou and others, 'A Foundation Model for Generalizable Disease Detection from Retinal Images' (2023) 622 Nature 156.",
+  "short": "Zhou and others"
+ },
+ "s3-groh-m-2024": {
+  "full": "Matthew Groh and others, 'Deep Learning-Aided Decision Support for Diagnosis of Skin Disease Across Skin Tones' (2024) 30 Nature Medicine 573.",
+  "short": "Groh and others"
+ },
+ "s3-yan-s-2025": {
+  "full": "Siyuan Yan and others, 'A Multimodal Vision Foundation Model for Clinical Dermatology' (2025) 31 Nature Medicine 2691.",
+  "short": "Yan and others"
+ },
+ "s3-yao-x-2021": {
+  "full": "Xiaoxi Yao and others, 'Artificial Intelligence–Enabled Electrocardiograms for Identification of Patients with Low Ejection Fraction: A Pragmatic, Randomized Clinical Trial' (2021) 27 Nature Medicine 815.",
+  "short": "Yao and others"
+ },
+ "s3-lin-cs-2024": {
+  "full": "Chin-Sheng Lin and others, 'AI-Enabled Electrocardiography Alert Intervention and All-Cause Mortality: A Pragmatic Randomized Clinical Trial' (2024) 30 Nature Medicine 1461.",
+  "short": "Lin and others, 'AI-Enabled Electrocardiography Alert Intervention and…'"
+ },
+ "s3-goh-e-2024": {
+  "full": "Ethan Goh and others, 'Large Language Model Influence on Diagnostic Reasoning: A Randomized Clinical Trial' (2024) 7 JAMA Network Open e2440969.",
+  "short": "Goh and others, 'Large Language Model Influence on…'"
+ },
+ "s3-goh-e-2025": {
+  "full": "Ethan Goh and others, 'GPT-4 Assistance for Improvement of Physician Performance on Patient Care Tasks: A Randomized Controlled Trial' (2025) 31 Nature Medicine 1233.",
+  "short": "Goh and others, 'GPT-4 Assistance for Improvement of…'"
+ },
+ "s3-tu-t-2025": {
+  "full": "Tao Tu and others, 'Towards Conversational Diagnostic Artificial Intelligence' (2025) 642 Nature 442.",
+  "short": "Tu and others, 'Towards Conversational Diagnostic Artificial Intelligence'"
+ },
+ "s3-mcduff-d-2025": {
+  "full": "Daniel McDuff and others, 'Towards Accurate Differential Diagnosis with Large Language Models' (2025) 642 Nature 451.",
+  "short": "McDuff and others"
+ },
+ "s3-brodeur-pg-2026": {
+  "full": "Peter G Brodeur and others, 'Conversational Diagnostic Artificial Intelligence in Ambulatory Primary Care: A Prospective Feasibility Study' [2026] Lancet <https://doi.org/10.1016/S0140-6736(26)01535-7> accessed 14 October 2026.",
+  "short": "Brodeur and others"
+ },
+ "s3-nori-h-2025": {
+  "full": "Harsha Nori and others, 'Sequential Diagnosis with Language Models' (arXiv:2506.22405, 2025) <https://arxiv.org/abs/2506.22405> accessed 14 October 2026.",
+  "short": "Nori and others"
+ },
+ "s3-bean-am-2026": {
+  "full": "Andrew M Bean and others, 'Reliability of LLMs as Medical Assistants for the General Public: A Randomized Preregistered Study' (2026) 32 Nature Medicine 609.",
+  "short": "Bean and others"
+ },
+ "s3-takita-h-2025": {
+  "full": "Hirotaka Takita and others, 'A Systematic Review and Meta-Analysis of Diagnostic Performance Comparison Between Generative AI and Physicians' (2025) 8 npj Digital Medicine 175.",
+  "short": "Takita and others"
+ },
+ "s3-bedi-s-2025": {
+  "full": "Suhana Bedi and others, 'Testing and Evaluation of Health Care Applications of Large Language Models: A Systematic Review' (2025) 333 JAMA 319.",
+  "short": "Bedi and others"
+ },
+ "s3-wang-g-2026": {
+  "full": "Guoyong Wang and others, 'Human–Large Language Model Collaboration in Clinical Medicine: A Systematic Review and Meta-Analysis' (2026) 9 npj Digital Medicine 195.",
+  "short": "Wang and others, 'Human–Large Language Model Collaboration in…'"
+ },
+ "s3-han-r-2024": {
+  "full": "Ryan Han and others, 'Randomised Controlled Trials Evaluating Artificial Intelligence in Clinical Practice: A Scoping Review' (2024) 6 Lancet Digital Health e367.",
+  "short": "Han and others"
+ },
+ "s3-plana-d-2022": {
+  "full": "Deborah Plana and others, 'Randomized Clinical Trials of Machine Learning Interventions in Health Care: A Systematic Review' (2022) 5 JAMA Network Open e2233946.",
+  "short": "Plana and others"
+ },
+ "s3-lam-tyt-2022": {
+  "full": "Thomas YT Lam and others, 'Randomized Controlled Trials of Artificial Intelligence in Clinical Practice: Systematic Review' (2022) 24 Journal of Medical Internet Research e37188.",
+  "short": "Lam and others"
+ },
+ "s3-ong-a-2026": {
+  "full": "Angus Qi Chwen Ong and others, 'Artificial Intelligence in Cardiovascular Care: A Systematic Review and Meta-Analysis of Randomised Controlled Trials' (2026) 98 eClinicalMedicine 104123.",
+  "short": "Ong and others"
+ },
+ "s3-us-fda-artificial-intell-nd": {
+  "full": "US Food and Drug Administration, 'Artificial Intelligence-Enabled Medical Devices' (FDA, 4 September 2026) <https://www.fda.gov/medical-devices/artificial-intelligence-enabled-medical-devices/list-artificial-intelligence-enabled-medical-devices> accessed 14 October 2026.",
+  "short": "FDA, 'AI-Enabled Medical Devices'"
+ },
+ "s4-wong-a-2021": {
+  "full": "Andrew Wong and others, 'External Validation of a Widely Implemented Proprietary Sepsis Prediction Model in Hospitalized Patients' (2021) 181 JAMA Internal Medicine 1065.",
+  "short": "Wong and others, 'External Validation of a Widely…'"
+ },
+ "s4-lyons-pg-2023": {
+  "full": "Patrick G Lyons and others, 'Factors Associated with Variability in the Performance of a Proprietary Sepsis Prediction Model Across 9 Networked Hospitals in the US' (2023) 183 JAMA Internal Medicine 611.",
+  "short": "Lyons and others"
+ },
+ "s4-kamran-f-2024": {
+  "full": "Fahad Kamran and others, 'Evaluation of Sepsis Prediction Models Before Onset of Treatment' (2024) 1 NEJM AI <https://doi.org/10.1056/AIoa2300032>.",
+  "short": "Kamran and others"
+ },
+ "s4-adams-r-2022": {
+  "full": "Roy Adams and others, 'Prospective, Multi-Site Study of Patient Outcomes After Implementation of the TREWS Machine Learning-Based Early Warning System for Sepsis' (2022) 28 Nature Medicine 1455.",
+  "short": "Adams and others"
+ },
+ "s4-shashikumar-sp-2021": {
+  "full": "Supreeth P Shashikumar and others, 'Artificial Intelligence Sepsis Prediction Algorithm Learns to Say “I Don’t Know”' (2021) 4 npj Digital Medicine 134.",
+  "short": "Shashikumar and others"
+ },
+ "s4-boussina-a-2024": {
+  "full": "Aaron Boussina and others, 'Impact of a Deep Learning Sepsis Prediction Model on Quality of Care and Survival' (2024) 7 npj Digital Medicine 14.",
+  "short": "Boussina and others"
+ },
+ "s4-escobar-gj-2020": {
+  "full": "Gabriel J Escobar and others, 'Automated Identification of Adults at Risk for in-Hospital Clinical Deterioration' (2020) 383 New England Journal of Medicine 1951.",
+  "short": "Escobar and others"
+ },
+ "s4-patel-h-2026": {
+  "full": "Hardik Patel and others, 'A Systematic Review and Meta-Analysis of Externally Validated Epic Clinical Decision Support Tools' [2026] Journal of General Internal Medicine <https://doi.org/10.1007/s11606-026-10381-y> accessed 14 October 2026.",
+  "short": "Patel and others"
+ },
+ "s4-lukac-pj-2025": {
+  "full": "Paul J Lukac and others, 'Ambient AI Scribes in Clinical Practice: A Randomized Trial' (2025) 2 NEJM AI <https://doi.org/10.1056/AIoa2501000>.",
+  "short": "Lukac and others"
+ },
+ "s4-afshar-m-2025": {
+  "full": "Majid Afshar and others, 'A Pragmatic Randomized Controlled Trial of Ambient Artificial Intelligence to Improve Health Practitioner Well-Being' (2025) 2 NEJM AI <https://doi.org/10.1056/AIoa2500945>.",
+  "short": "Afshar and others"
+ },
+ "s4-olson-kd-2025": {
+  "full": "Kristine D Olson and others, 'Use of Ambient AI Scribes to Reduce Administrative Burden and Professional Burnout' (2025) 8 JAMA Network Open e2534976.",
+  "short": "Olson and others"
+ },
+ "s4-pearlman-k-2025": {
+  "full": "Kevin Pearlman and others, 'Use of an AI Scribe and Electronic Health Record Efficiency' (2025) 8 JAMA Network Open e2537000.",
+  "short": "Pearlman and others"
+ },
+ "s4-tierney-aa-2024": {
+  "full": "Aaron A Tierney and others, 'Ambient Artificial Intelligence Scribes to Alleviate the Burden of Clinical Documentation' (2024) 5 NEJM Catalyst <https://doi.org/10.1056/CAT.23.0404>.",
+  "short": "Tierney and others"
+ },
+ "s4-garcia-p-2024": {
+  "full": "Patricia Garcia and others, 'Artificial Intelligence–Generated Draft Replies to Patient Inbox Messages' (2024) 7 JAMA Network Open e243201.",
+  "short": "Garcia and others"
+ },
+ "s4-tai-seale-m-2024": {
+  "full": "Ming Tai-Seale and others, 'AI-Generated Draft Replies Integrated into Health Records and Physicians’ Electronic Communication' (2024) 7 JAMA Network Open e246565.",
+  "short": "Tai-Seale and others"
+ },
+ "s4-nong-p-2025": {
+  "full": "Paige Nong and others, 'Current Use and Evaluation of Artificial Intelligence and Predictive Models in US Hospitals: Article Examines Uses and Evaluation of Artificial Intelligence and Predictive Models in US Hospitals' (2025) 44 Health Affairs 90.",
+  "short": "Nong and others"
+ },
+ "s4-everson-j-2025": {
+  "full": "Jordan Everson, Paige Nong and Chelsea Richwine, 'Uptake of Generative AI Integrated with Electronic Health Records in US Hospitals' (2025) 8 JAMA Network Open e2549463.",
+  "short": "Everson, Nong and Richwine"
+ },
+ "s4-american-medical-associa-2026": {
+  "full": "American Medical Association, *2026 Physician Survey on Augmented Intelligence* (AMA 2026) <https://www.ama-assn.org/practice-management/digital-health/more-80-physicians-use-ai-professionally-ama-survey> accessed 14 October 2026.",
+  "short": "American Medical Association"
+ },
+ "s4-tarabichi-y-2023": {
+  "full": "Yasir Tarabichi and others, 'Reducing Disparities in No Show Rates Using Predictive Model-Driven Live Appointment Reminders for at-Risk Patients: A Randomized Controlled Quality Improvement Initiative' (2023) 38 Journal of General Internal Medicine 2921.",
+  "short": "Tarabichi and others"
+ },
+ "s4-oikonomidi-t-2023": {
+  "full": "Theodora Oikonomidi and others, 'Predictive Model-Based Interventions to Reduce Outpatient No-Shows: A Rapid Systematic Review' (2023) 30 Journal of the American Medical Informatics Association 559.",
+  "short": "Oikonomidi and others"
+ },
+ "s4-stromblad-ct-2021": {
+  "full": "Christopher T Strömblad and others, 'Effect of a Predictive Model on Planned Surgical Duration Accuracy, Patient Wait Time, and Use of Presurgical Resources: A Randomized Clinical Trial' (2021) 156 JAMA Surgery 315.",
+  "short": "Strömblad and others"
+ },
+ "s4-king-z-2022": {
+  "full": "Zella King and others, 'Machine Learning for Real-Time Aggregated Prediction of Hospital Admission for Emergency Patients' (2022) 5 npj Digital Medicine 104.",
+  "short": "King and others"
+ },
+ "s4-soroush-a-2024": {
+  "full": "Ali Soroush and others, 'Large Language Models Are Poor Medical Coders — Benchmarking of Medical Code Querying' (2024) 1 NEJM AI <https://doi.org/10.1056/AIdbp2300040>.",
+  "short": "Soroush and others"
+ },
+ "s4-goddard-k-2012": {
+  "full": "Kate Goddard, Abdul Roudsari and Jeremy C Wyatt, 'Automation Bias: A Systematic Review of Frequency, Effect Mediators, and Mitigators' (2012) 19 Journal of the American Medical Informatics Association 121.",
+  "short": "Goddard, Roudsari and Wyatt"
+ },
+ "s4-dratsch-t-2023": {
+  "full": "Thomas Dratsch and others, 'Automation Bias in Mammography: The Impact of Artificial Intelligence BI-RADS Suggestions on Reader Performance' (2023) 307 Radiology e222176.",
+  "short": "Dratsch and others"
+ },
+ "s4-qazi-ia-2026": {
+  "full": "Ihsan Ayyub Qazi and others, 'Automation Bias in Large Language Model–Assisted Diagnostic Reasoning Among Physicians Trained in AI Literacy — A Randomized Clinical Trial' (2026) 3 NEJM AI <https://doi.org/10.1056/AIoa2501001>.",
+  "short": "Qazi and others"
+ },
+ "s5-jumper-j-2021": {
+  "full": "John Jumper and others, 'Highly Accurate Protein Structure Prediction with AlphaFold' (2021) 596 Nature 583.",
+  "short": "Jumper and others"
+ },
+ "s5-baek-m-2021": {
+  "full": "Minkyung Baek and others, 'Accurate Prediction of Protein Structures and Interactions Using a Three-Track Neural Network' (2021) 373 Science 871.",
+  "short": "Baek and others"
+ },
+ "s5-lin-z-2023": {
+  "full": "Zeming Lin and others, 'Evolutionary-Scale Prediction of Atomic-Level Protein Structure with a Language Model' (2023) 379 Science 1123.",
+  "short": "Lin and others, 'Evolutionary-Scale Prediction of Atomic-Level Protein…'"
+ },
+ "s5-watson-jl-2023": {
+  "full": "Joseph L Watson and others, 'De Novo Design of Protein Structure and Function with RFdiffusion' (2023) 620 Nature 1089.",
+  "short": "Watson and others"
+ },
+ "s5-abramson-j-2024": {
+  "full": "Josh Abramson and others, 'Accurate Structure Prediction of Biomolecular Interactions with AlphaFold 3' (2024) 630 Nature 493.",
+  "short": "Abramson and others"
+ },
+ "s5-royal-swedish-academy-of-2024": {
+  "full": "Royal Swedish Academy of Sciences, 'The Nobel Prize in Chemistry 2024' (press release, 9 October 2024) <https://www.nobelprize.org/prizes/chemistry/2024/press-release/> accessed 14 October 2026.",
+  "short": "Royal Swedish Academy of Sciences"
+ },
+ "s5-hayes-t-2025": {
+  "full": "Thomas Hayes and others, 'Simulating 500 Million Years of Evolution with a Language Model' (2025) 387 Science 850.",
+  "short": "Hayes and others"
+ },
+ "s5-wohlwend-j-2024": {
+  "full": "Jeremy Wohlwend and others, 'Boltz-1 Democratizing Biomolecular Interaction Modeling' (bioRxiv preprint, 2024) <https://doi.org/10.1101/2024.11.19.624167> accessed 14 October 2026.",
+  "short": "Wohlwend and others"
+ },
+ "s5-passaro-s-2025": {
+  "full": "Saro Passaro and others, 'Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction' (bioRxiv preprint, 2025) <https://doi.org/10.1101/2025.06.14.659707> accessed 14 October 2026.",
+  "short": "Passaro and others"
+ },
+ "s5-bennett-nr-2026": {
+  "full": "Nathaniel R Bennett and others, 'Atomically Accurate De Novo Design of Antibodies with RFdiffusion' (2026) 649 Nature 183.",
+  "short": "Bennett and others"
+ },
+ "s5-ren-f-2025": {
+  "full": "Feng Ren and others, 'A Small-Molecule TNIK Inhibitor Targets Fibrosis in Preclinical and Clinical Models' (2025) 43 Nature Biotechnology 63.",
+  "short": "Ren and others"
+ },
+ "s5-xu-z-2025": {
+  "full": "Zuojun Xu and others, 'A Generative AI-Discovered TNIK Inhibitor for Idiopathic Pulmonary Fibrosis: A Randomized Phase 2a Trial' (2025) 31 Nature Medicine 2602.",
+  "short": "Xu and others, 'A Generative AI-Discovered TNIK Inhibitor…'"
+ },
+ "s5-jayatunga-mkp-2024": {
+  "full": "Madura KP Jayatunga and others, 'How Successful Are AI-Discovered Drugs in Clinical Trials? A First Analysis and Emerging Lessons' (2024) 29 Drug Discovery Today 104009.",
+  "short": "Jayatunga and others"
+ },
+ "s5-stokes-jm-2020": {
+  "full": "Jonathan M Stokes and others, 'A Deep Learning Approach to Antibiotic Discovery' (2020) 180 Cell 688.",
+  "short": "Stokes and others"
+ },
+ "s5-liu-g-2023": {
+  "full": "Gary Liu and others, 'Deep Learning-Guided Discovery of an Antibiotic Targeting Acinetobacter Baumannii' (2023) 19 Nature Chemical Biology 1342.",
+  "short": "Liu and others, 'Deep Learning-Guided Discovery of an…'"
+ },
+ "s5-wong-f-2024": {
+  "full": "Felix Wong and others, 'Discovery of a Structural Class of Antibiotics with Explainable Deep Learning' (2024) 626 Nature 177.",
+  "short": "Wong and others, 'Discovery of a Structural Class…'"
+ },
+ "s5-krishnan-a-2025": {
+  "full": "Aarti Krishnan and others, 'A Generative Deep Learning Approach to De Novo Antibiotic Design' (2025) 188 Cell 5962.",
+  "short": "Krishnan and others"
+ },
+ "s5-jin-q-2024": {
+  "full": "Qiao Jin and others, 'Matching Patients to Clinical Trials with Large Language Models' (2024) 15 Nature Communications 9074.",
+  "short": "Jin and others"
+ },
+ "s5-bordukova-m-2024": {
+  "full": "Maria Bordukova and others, 'Generative Artificial Intelligence Empowers Digital Twins in Drug Discovery and Clinical Trials' (2024) 19 Expert Opinion on Drug Discovery 33.",
+  "short": "Bordukova and others"
+ },
+ "s5-ema-chmp-2022": {
+  "full": "European Medicines Agency, Committee for Medicinal Products for Human Use, *Qualification Opinion for Prognostic Covariate Adjustment (PROCOVA™)* (EMA 2022) <https://www.ema.europa.eu/documents/regulatory-procedural-guideline/qualification-opinion-prognostic-covariate-adjustment-procovatm_en.pdf> accessed 14 October 2026.",
+  "short": "EMA, *PROCOVA Qualification Opinion*"
+ },
+ "s5-us-fda-2025": {
+  "full": "US Food and Drug Administration, *Considerations for the Use of Artificial Intelligence to Support Regulatory Decision-Making for Drug and Biological Products* (Draft Guidance for Industry, January 2025) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/considerations-use-artificial-intelligence-support-regulatory-decision-making-drug-and-biological> accessed 14 October 2026.",
+  "short": "FDA, *AI to Support Regulatory Decision-Making*"
+ },
+ "s5-cheng-j-2023": {
+  "full": "Jun Cheng and others, 'Accurate Proteome-Wide Missense Variant Effect Prediction with AlphaMissense' (2023) 381 Science eadg7492.",
+  "short": "Cheng and others"
+ },
+ "s5-nguyen-e-2024": {
+  "full": "Eric Nguyen and others, 'Sequence Modeling and Design from Molecular to Genome Scale with Evo' (2024) 386 Science eado9336.",
+  "short": "Nguyen and others"
+ },
+ "s5-brixi-g-2026": {
+  "full": "Garyk Brixi and others, 'Genome Modelling and Design Across All Domains of Life with Evo 2' (2026) 652 Nature 1349.",
+  "short": "Brixi and others"
+ },
+ "s5-avsec-z-2026": {
+  "full": "Žiga Avsec and others, 'Advancing Regulatory Variant Effect Prediction with AlphaGenome' (2026) 649 Nature 1206.",
+  "short": "Avsec and others"
+ },
+ "s5-shmatko-a-2025": {
+  "full": "Artem Shmatko and others, 'Learning the Natural History of Human Disease with Generative Transformers' (2025) 647 Nature 248.",
+  "short": "Shmatko and others"
+ },
+ "s5-bunne-c-2024": {
+  "full": "Charlotte Bunne and others, 'How to Build the Virtual Cell with Artificial Intelligence: Priorities and Opportunities' (2024) 187 Cell 7045.",
+  "short": "Bunne and others"
+ },
+ "s5-theodoris-cv-2023": {
+  "full": "Christina V Theodoris and others, 'Transfer Learning Enables Predictions in Network Biology' (2023) 618 Nature 616.",
+  "short": "Theodoris and others"
+ },
+ "s5-cui-h-2024": {
+  "full": "Haotian Cui and others, 'scGPT: Toward Building a Foundation Model for Single-Cell Multi-Omics Using Generative AI' (2024) 21 Nature Methods 1470.",
+  "short": "Cui and others"
+ },
+ "s5-kedzierska-kz-2025": {
+  "full": "Kasia Z Kedzierska and others, 'Zero-Shot Evaluation Reveals Limitations of Single-Cell Foundation Models' (2025) 26 Genome Biology 101.",
+  "short": "Kedzierska and others"
+ },
+ "s5-ahlmann-eltze-c-2025": {
+  "full": "Constantin Ahlmann-Eltze, Wolfgang Huber and Simon Anders, 'Deep-Learning-Based Gene Perturbation Effect Prediction Does Not yet Outperform Simple Linear Baselines' (2025) 22 Nature Methods 1657.",
+  "short": "Ahlmann-Eltze, Huber and Anders"
+ },
+ "s5-boiko-da-2023": {
+  "full": "Daniil A Boiko and others, 'Autonomous Chemical Research with Large Language Models' (2023) 624 Nature 570.",
+  "short": "Boiko and others"
+ },
+ "s5-szymanski-nj-2023": {
+  "full": "Nathan J Szymanski and others, 'An Autonomous Laboratory for the Accelerated Synthesis of Inorganic Materials' (2023) 624 Nature 86.",
+  "short": "Szymanski and others"
+ },
+ "s5-gottweis-j-2026": {
+  "full": "Juraj Gottweis and others, 'Accelerating Scientific Discovery with Co-Scientist' (2026) 655 Nature 487.",
+  "short": "Gottweis and others"
+ },
+ "s5-ghareeb-ae-2026": {
+  "full": "Ali E Ghareeb and others, 'A Multi-Agent System for Automating Scientific Discovery' (2026) 655 Nature 497.",
+  "short": "Ghareeb and others"
+ },
+ "s5-swanson-k-2025": {
+  "full": "Kyle Swanson and others, 'The Virtual Lab of AI Agents Designs New SARS-CoV-2 Nanobodies' (2025) 646 Nature 716.",
+  "short": "Swanson and others"
+ },
+ "s5-lu-c-2026": {
+  "full": "Chris Lu and others, 'Towards End-To-End Automation of AI Research' (2026) 651 Nature 914.",
+  "short": "Lu and others, 'Towards End-To-End Automation of AI…'"
+ },
+ "s6-bastian-h-2010": {
+  "full": "Hilda Bastian, Paul Glasziou and Iain Chalmers, 'Seventy-Five Trials and Eleven Systematic Reviews a Day: How Will We Ever Keep Up?' (2010) 7 PLoS Medicine e1000326.",
+  "short": "Bastian, Glasziou and Chalmers"
+ },
+ "s6-bornmann-l-2021": {
+  "full": "Lutz Bornmann, Robin Haunschild and Rüdiger Mutz, 'Growth Rates of Modern Science: A Latent Piecewise Growth Curve Approach to Model Publication Numbers from Established and New Literature Databases' (2021) 8 Humanities and Social Sciences Communications 224.",
+  "short": "Bornmann, Haunschild and Mutz"
+ },
+ "s6-hanson-ma-2024": {
+  "full": "Mark A Hanson and others, 'The Strain on Scientific Publishing' (2024) 5 Quantitative Science Studies 823.",
+  "short": "Hanson and others"
+ },
+ "s6-national-library-of-medi-nd": {
+  "full": "National Library of Medicine, 'MEDLINE/PubMed Production Statistics' (NLM) <https://www.nlm.nih.gov/bsd/medline_pubmed_production_stats.html> accessed 14 October 2026.",
+  "short": "National Library of Medicine"
+ },
+ "s6-borah-r-2017": {
+  "full": "Rohit Borah and others, 'Analysis of the Time and Workers Needed to Conduct Systematic Reviews of Medical Interventions Using Data from the PROSPERO Registry' (2017) 7 BMJ Open e012545.",
+  "short": "Borah and others"
+ },
+ "s6-chalmers-i-2009": {
+  "full": "Iain Chalmers and Paul Glasziou, 'Avoidable Waste in the Production and Reporting of Research Evidence' (2009) 374 Lancet 86.",
+  "short": "Chalmers and Glasziou"
+ },
+ "s6-glasziou-p-2014": {
+  "full": "Paul Glasziou and others, 'Reducing Waste from Incomplete or Unusable Reports of Biomedical Research' (2014) 383 Lancet 267.",
+  "short": "Glasziou and others"
+ },
+ "s6-ioannidis-jpa-2016": {
+  "full": "John PA Ioannidis, 'The Mass Production of Redundant, Misleading, and Conflicted Systematic Reviews and Meta‐analyses' (2016) 94 Milbank Quarterly 485.",
+  "short": "Ioannidis, 'The Mass Production of Redundant,…'"
+ },
+ "s6-van-noorden-r-2023": {
+  "full": "Richard Van Noorden, 'More than 10,000 Research Papers Were Retracted in 2023 — A New Record' (2023) 624 Nature 479.",
+  "short": "Van Noorden"
+ },
+ "s6-richardson-rak-2025": {
+  "full": "Reese AK Richardson and others, 'The Entities Enabling Scientific Fraud at Scale Are Large, Resilient, and Growing Rapidly' (2025) 122 Proceedings of the National Academy of Sciences e2420092122.",
+  "short": "Richardson and others"
+ },
+ "s6-byrne-ja-2020": {
+  "full": "Jennifer A Byrne and Jana Christopher, 'Digital Magic, or the Dark Arts of the 21st Century—How Can Journals and Peer Reviewers Detect Manuscripts and Publications from Paper Mills?' (2020) 594 FEBS Letters 583.",
+  "short": "Byrne and Christopher"
+ },
+ "s6-suchak-t-2025": {
+  "full": "Tulsi Suchak and others, 'Explosion of Formulaic Research Articles, Including Inappropriate Study Designs and False Discoveries, Based on the NHANES US National Health Database' (2025) 23 PLOS Biology e3003152.",
+  "short": "Suchak and others"
+ },
+ "s6-kobak-d-2025": {
+  "full": "Dmitry Kobak and others, 'Delving into LLM-Assisted Writing in Biomedical Publications Through Excess Vocabulary' (2025) 11 Science Advances eadt3813.",
+  "short": "Kobak and others"
+ },
+ "s6-liang-w-2025": {
+  "full": "Weixin Liang and others, 'Quantifying Large Language Model Usage in Scientific Papers' (2025) 9 Nature Human Behaviour 2599.",
+  "short": "Liang and others, 'Quantifying Large Language Model Usage…'"
+ },
+ "s6-tsafnat-g-2014": {
+  "full": "Guy Tsafnat and others, 'Systematic Review Automation Technologies' (2014) 3 Systematic Reviews 74.",
+  "short": "Tsafnat and others"
+ },
+ "s6-marshall-ij-2016": {
+  "full": "Iain J Marshall, Joël Kuiper and Byron C Wallace, 'RobotReviewer: Evaluation of a System for Automatically Assessing Bias in Clinical Trials' (2016) 23 Journal of the American Medical Informatics Association 193.",
+  "short": "Marshall, Kuiper and Wallace"
+ },
+ "s6-ouzzani-m-2016": {
+  "full": "Mourad Ouzzani and others, 'Rayyan—A Web and Mobile App for Systematic Reviews' (2016) 5 Systematic Reviews 210.",
+  "short": "Ouzzani and others"
+ },
+ "s6-marshall-ij-2018": {
+  "full": "Iain J Marshall and others, 'Machine Learning for Identifying Randomized Controlled Trials: An Evaluation and Practitioner's Guide' (2018) 9 Research Synthesis Methods 602.",
+  "short": "Marshall and others"
+ },
+ "s6-marshall-ij-2019": {
+  "full": "Iain J Marshall and Byron C Wallace, 'Toward Systematic Review Automation: A Practical Guide to Using Machine Learning Tools in Research Synthesis' (2019) 8 Systematic Reviews 163.",
+  "short": "Marshall and Wallace"
+ },
+ "s6-o-connor-am-2019": {
+  "full": "Annette M O’Connor and others, 'A Question of Trust: Can We Build an Evidence Base to Gain Trust in Systematic Review Automation Technologies?' (2019) 8 Systematic Reviews 143.",
+  "short": "O’Connor and others"
+ },
+ "s6-van-de-schoot-r-2021": {
+  "full": "Rens van de Schoot and others, 'An Open Source Machine Learning Framework for Efficient and Transparent Systematic Reviews' (2021) 3 Nature Machine Intelligence 125.",
+  "short": "van de Schoot and others"
+ },
+ "s6-thomas-j-2021": {
+  "full": "James Thomas and others, 'Machine Learning Reduced Workload with Minimal Risk of Missing Studies: Development and Evaluation of a Randomized Controlled Trial Classifier for Cochrane Reviews' (2021) 133 Journal of Clinical Epidemiology 140.",
+  "short": "Thomas and others, 'Machine Learning Reduced Workload with…'"
+ },
+ "s6-guo-e-2024": {
+  "full": "Eddie Guo and others, 'Automated Paper Screening for Clinical Reviews Using Large Language Models: Data Analysis Study' (2024) 26 Journal of Medical Internet Research e48996.",
+  "short": "Guo and others"
+ },
+ "s6-khraisha-q-2024": {
+  "full": "Qusai Khraisha and others, 'Can Large Language Models Replace Humans in Systematic Reviews? Evaluating GPT ‐4's Efficacy in Screening and Extracting Data from Peer‐reviewed and Grey Literature in Multiple Languages' (2024) 15 Research Synthesis Methods 616.",
+  "short": "Khraisha and others"
+ },
+ "s6-gartlehner-g-2024": {
+  "full": "Gerald Gartlehner and others, 'Data Extraction for Evidence Synthesis Using a Large Language Model: A Proof‐of‐concept Study' (2024) 15 Research Synthesis Methods 576.",
+  "short": "Gartlehner and others"
+ },
+ "s6-lai-h-2024": {
+  "full": "Honghao Lai and others, 'Assessing the Risk of Bias in Randomized Clinical Trials with Large Language Models' (2024) 7 JAMA Network Open e2412687.",
+  "short": "Lai and others"
+ },
+ "s6-lieberum-jl-2025": {
+  "full": "Judith-Lisa Lieberum and others, 'Large Language Models for Conducting Systematic Reviews: On the Rise, but Not yet Ready for Use—A Scoping Review' (2025) 181 Journal of Clinical Epidemiology 111746.",
+  "short": "Lieberum and others"
+ },
+ "s6-wang-z-2025": {
+  "full": "Zifeng Wang and others, 'Accelerating Clinical Evidence Synthesis with Large Language Models' (2025) 8 npj Digital Medicine 509.",
+  "short": "Wang and others, 'Accelerating Clinical Evidence Synthesis with…'"
+ },
+ "s6-cao-c-2025": {
+  "full": "Christian Cao and others, 'Automation of Systematic Reviews with Large Language Models' (medRxiv preprint, 2025) <https://doi.org/10.1101/2025.06.13.25329541> accessed 14 October 2026.",
+  "short": "Cao and others"
+ },
+ "s6-polzak-c-2026": {
+  "full": "Christopher Polzak and others, 'Can Large Language Models Match the Conclusions of Systematic Reviews?' (International Conference on Learning Representations, 2026) <https://mlanthology.org/iclr/2026/polzak2026iclr-large/> accessed 14 October 2026.",
+  "short": "Polzak and others"
+ },
+ "s6-thomas-j-2024": {
+  "full": "James Thomas, Ella Flemyng and Anna Noel-Storr, 'Responsible Use of AI in Evidence SynthEsis (RAISE): Recommendations and Guidance' (OSF, 2025) <https://doi.org/10.17605/OSF.IO/FWAUD> accessed 14 October 2026.",
+  "short": "Thomas, Flemyng and Noel-Storr"
+ },
+ "s6-flemyng-e-2025": {
+  "full": "Ella Flemyng and others, 'Position Statement on Artificial Intelligence (AI) Use in Evidence Synthesis Across Cochrane, the Campbell Collaboration, JBI, and the Collaboration for Environmental Evidence 2025' (2025) 23 JBI Evidence Synthesis 2162.",
+  "short": "Flemyng and others"
+ },
+ "s6-walters-wh-2023": {
+  "full": "William H Walters and Esther Isabelle Wilder, 'Fabrication and Errors in the Bibliographic Citations Generated by ChatGPT' (2023) 13 Scientific Reports 14045.",
+  "short": "Walters and Wilder"
+ },
+ "s6-chelli-m-2024": {
+  "full": "Mikaël Chelli and others, 'Hallucination Rates and Reference Accuracy of ChatGPT and Bard for Systematic Reviews: Comparative Analysis' (2024) 26 Journal of Medical Internet Research e53164.",
+  "short": "Chelli and others"
+ },
+ "s6-ioannidis-jpa-2005": {
+  "full": "John PA Ioannidis, 'Why Most Published Research Findings Are False' (2005) 2 PLoS Medicine e124.",
+  "short": "Ioannidis, 'Why Most Published Research Findings…'"
+ },
+ "s6-open-science-collaborati-2015": {
+  "full": "Open Science Collaboration, 'Estimating the Reproducibility of Psychological Science' (2015) 349 Science aac4716.",
+  "short": "Open Science Collaboration"
+ },
+ "s6-errington-tm-2021": {
+  "full": "Timothy M Errington and others, 'Investigating the Replicability of Preclinical Cancer Biology' (2021) 10 eLife e71601.",
+  "short": "Errington and others"
+ },
+ "s6-kapoor-s-2023": {
+  "full": "Sayash Kapoor and Arvind Narayanan, 'Leakage and the Reproducibility Crisis in Machine-Learning-Based Science' (2023) 4 Patterns 100804.",
+  "short": "Kapoor and Narayanan"
+ },
+ "s6-nuijten-mb-2016": {
+  "full": "Michèle B Nuijten and others, 'The Prevalence of Statistical Reporting Errors in Psychology (1985–2013)' (2016) 48 Behavior Research Methods 1205.",
+  "short": "Nuijten and others"
+ },
+ "s6-bik-em-2016": {
+  "full": "Elisabeth M Bik, Arturo Casadevall and Ferric C Fang, 'The Prevalence of Inappropriate Image Duplication in Biomedical Research Publications' (2016) 7 mBio e00809-16.",
+  "short": "Bik, Casadevall and Fang"
+ },
+ "s6-bucci-em-2018": {
+  "full": "Enrico M Bucci, 'Automatic Detection of Image Manipulations in the Biomedical Literature' (2018) 9 Cell Death & Disease 400.",
+  "short": "Bucci"
+ },
+ "s6-gibney-e-2025": {
+  "full": "Elizabeth Gibney, 'AI Tools Are Spotting Errors in Research Papers: Inside a Growing Movement' [2025] Nature <https://doi.org/10.1038/d41586-025-00648-5> accessed 14 October 2026.",
+  "short": "Gibney, 'AI Tools Are Spotting Errors…'"
+ },
+ "s6-starace-g-2025": {
+  "full": "Giulio Starace and others, 'PaperBench: Evaluating AI's Ability to Replicate AI Research' in *Proceedings of the 42nd International Conference on Machine Learning* (PMLR 267, 2025) 56843.",
+  "short": "Starace and others"
+ },
+ "s6-siegel-zs-2024": {
+  "full": "Zachary S Siegel and others, 'CORE-Bench: Fostering the Credibility of Published Research Through a Computational Reproducibility Agent Benchmark' [2024] Transactions on Machine Learning Research <https://arxiv.org/abs/2409.11363> accessed 14 October 2026.",
+  "short": "Siegel and others"
+ },
+ "s6-hu-c-2025": {
+  "full": "Chuxuan Hu and others, 'REPRO-Bench: Can Agentic AI Systems Assess the Reproducibility of Social Science Research?' in *Findings of the Association for Computational Linguistics: ACL 2025* (Association for Computational Linguistics 2025) 23616.",
+  "short": "Hu and others"
+ },
+ "s6-kohler-b-2026": {
+  "full": "Benjamin Kohler and others, 'Read the Paper, Write the Code: Agentic Reproduction of Social-Science Results' (arXiv:2604.21965, 2026) <https://arxiv.org/abs/2604.21965> accessed 14 October 2026.",
+  "short": "Kohler and others"
+ },
+ "s6-alizadeh-m-2026": {
+  "full": "Meysam Alizadeh and others, 'AI Coding Agents Can Reproduce Social Science Findings' (arXiv:2606.11447, 2026) <https://arxiv.org/abs/2606.11447> accessed 14 October 2026.",
+  "short": "Alizadeh and others"
+ },
+ "s6-holtdirk-t-2026": {
+  "full": "Tobias Holtdirk and others, 'Automated Reproducibility Assessments in the Social and Behavioral Sciences Using Large Language Models' (arXiv:2606.13670, 2026) <https://arxiv.org/abs/2606.13670> accessed 14 October 2026.",
+  "short": "Holtdirk and others"
+ },
+ "s6-liang-w-2024": {
+  "full": "Weixin Liang and others, 'Can Large Language Models Provide Useful Feedback on Research Papers? A Large-Scale Empirical Analysis' (2024) 1 NEJM AI AIoa2400196.",
+  "short": "Liang and others, 'Can Large Language Models Provide…'"
+ },
+ "s6-liang-w-2024-2": {
+  "full": "Weixin Liang and others, 'Monitoring AI-Modified Content at Scale: A Case Study on the Impact of ChatGPT on AI Conference Peer Reviews' in *Proceedings of the 41st International Conference on Machine Learning* (PMLR 235, 2024) 29575.",
+  "short": "Liang and others, 'Monitoring AI-Modified Content at Scale'"
+ },
+ "s6-thakkar-n-2026": {
+  "full": "Nitya Thakkar and others, 'A Large-Scale Randomized Study of Large Language Model Feedback in Peer Review' (2026) 8 Nature Machine Intelligence 326.",
+  "short": "Thakkar and others"
+ },
+ "s6-hosseini-m-2023": {
+  "full": "Mohammad Hosseini and Serge PJM Horbach, 'Fighting Reviewer Fatigue or Amplifying Bias? Considerations and Recommendations for Use of ChatGPT and Other Large Language Models in Scholarly Peer Review' (2023) 8 Research Integrity and Peer Review 4.",
+  "short": "Hosseini and Horbach"
+ },
+ "s6-gibney-e-2025-2": {
+  "full": "Elizabeth Gibney, 'Scientists Hide Messages in Papers to Game AI Peer Review' (2025) 643 Nature 887.",
+  "short": "Gibney, 'Scientists Hide Messages in Papers…'"
+ },
+ "s7-elliott-jh-2014": {
+  "full": "Julian H Elliott and others, 'Living Systematic Reviews: An Emerging Opportunity to Narrow the Evidence-Practice Gap' (2014) 11 PLoS Medicine e1001603.",
+  "short": "Elliott and others, 'Living Systematic Reviews'"
+ },
+ "s7-elliott-jh-2017": {
+  "full": "Julian H Elliott and others, 'Living Systematic Review: 1. Introduction—The Why, What, When, and How' (2017) 91 Journal of Clinical Epidemiology 23.",
+  "short": "Elliott and others, 'Living Systematic Review'"
+ },
+ "s7-thomas-j-2017": {
+  "full": "James Thomas and others, 'Living Systematic Reviews: 2. Combining Human and Machine Effort' (2017) 91 Journal of Clinical Epidemiology 31.",
+  "short": "Thomas and others, 'Living Systematic Reviews'"
+ },
+ "s7-tendal-b-2021": {
+  "full": "Britta Tendal and others, 'Weekly Updates of National Living Evidence-Based Guidelines: Methods for the Australian Living Guidelines for Care of People with COVID-19' (2021) 131 Journal of Clinical Epidemiology 11.",
+  "short": "Tendal and others"
+ },
+ "s7-siemieniuk-ra-2020": {
+  "full": "Reed AC Siemieniuk and others, 'Drug Treatments for Covid-19: Living Systematic Review and Network Meta-Analysis' (2020) 370 BMJ m2980.",
+  "short": "Siemieniuk and others"
+ },
+ "s7-agarwal-a-2020": {
+  "full": "Arnav Agarwal and others, 'A Living WHO Guideline on Drugs for Covid-19 (2020-2023)' (2020) 370 BMJ m3379.",
+  "short": "Agarwal and others"
+ },
+ "s7-elliott-j-2021": {
+  "full": "Julian Elliott and others, 'Decision Makers Need Constantly Updated Evidence Synthesis' (2021) 600 Nature 383.",
+  "short": "Elliott and others, 'Decision Makers Need Constantly Updated…'"
+ },
+ "s7-wiles-l-2024": {
+  "full": "Louise Wiles and others, 'Is It Possible to Make ‘Living’ Guidelines? An Evaluation of the Australian Living Stroke Guidelines' (2024) 24 BMC Health Services Research 419.",
+  "short": "Wiles and others"
+ },
+ "s7-asai-a-2026": {
+  "full": "Akari Asai and others, 'Synthesizing Scientific Literature with Retrieval-Augmented Language Models' (2026) 650 Nature 857.",
+  "short": "Asai and others"
+ },
+ "s7-skarlinski-md-2024": {
+  "full": "Michael D Skarlinski and others, 'Language Agents Achieve Superhuman Synthesis of Scientific Knowledge' (arXiv:2409.13740, 2024) <https://arxiv.org/abs/2409.13740> accessed 14 October 2026.",
+  "short": "Skarlinski and others"
+ },
+ "s7-rao-d-2026": {
+  "full": "Delip Rao, Eric Wong and Chris Callison-Burch, 'Detecting and Correcting Reference Hallucinations in Commercial LLMs and Deep Research Agents' (arXiv:2604.03173, 2026) <https://arxiv.org/abs/2604.03173> accessed 14 October 2026.",
+  "short": "Rao, Wong and Callison-Burch"
+ },
+ "s8-obermeyer-z-2019": {
+  "full": "Ziad Obermeyer and others, 'Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations' (2019) 366 Science 447.",
+  "short": "Obermeyer and others"
+ },
+ "s8-omiye-ja-2023": {
+  "full": "Jesutofunmi A Omiye and others, 'Large Language Models Propagate Race-Based Medicine' (2023) 6 npj Digital Medicine 195.",
+  "short": "Omiye and others"
+ },
+ "s8-zack-t-2024": {
+  "full": "Travis Zack and others, 'Assessing the Potential of GPT-4 to Perpetuate Racial and Gender Biases in Health Care: A Model Evaluation Study' (2024) 6 Lancet Digital Health e12.",
+  "short": "Zack and others"
+ },
+ "s8-asgari-e-2025": {
+  "full": "Elham Asgari and others, 'A Framework to Assess Clinical Safety and Hallucination Rates of LLMs for Medical Text Summarisation' (2025) 8 npj Digital Medicine 274.",
+  "short": "Asgari and others"
+ },
+ "s8-omar-m-2025": {
+  "full": "Mahmud Omar and others, 'Multi-Model Assurance Analysis Showing Large Language Models Are Highly Vulnerable to Adversarial Hallucination Attacks During Clinical Decision Support' (2025) 5 Communications Medicine 330.",
+  "short": "Omar and others"
+ },
+ "s8-price-wn-ii-2019": {
+  "full": "W Nicholson Price and I Glenn Cohen, 'Privacy in the Age of Medical Big Data' (2019) 25 Nature Medicine 37.",
+  "short": "Price and Cohen"
+ },
+ "s8-gerke-s-2026": {
+  "full": "Sara Gerke and David A Simon, 'Privacy Considerations of Artificial Intelligence Scribes' (2026) 3 NEJM AI <https://doi.org/10.1056/AIpc2501401>.",
+  "short": "Gerke and Simon"
+ },
+ "s8-finlayson-sg-2021": {
+  "full": "Samuel G Finlayson and others, 'The Clinician and Dataset Shift in Artificial Intelligence' (2021) 385 New England Journal of Medicine 283.",
+  "short": "Finlayson and others"
+ },
+ "s8-wong-a-2021": {
+  "full": "Andrew Wong and others, 'Quantification of Sepsis Model Alerts in 24 US Hospitals Before and During the COVID-19 Pandemic' (2021) 4 JAMA Network Open e2135286.",
+  "short": "Wong and others, 'Quantification of Sepsis Model Alerts…'"
+ },
+ "s8-subasri-v-2025": {
+  "full": "Vallijah Subasri and others, 'Detecting and Remediating Harmful Data Shifts for the Responsible Deployment of Clinical AI Models' (2025) 8 JAMA Network Open e2513685.",
+  "short": "Subasri and others"
+ },
+ "s8-wu-e-2021": {
+  "full": "Eric Wu and others, 'How Medical AI Devices Are Evaluated: Limitations and Recommendations from an Analysis of FDA Approvals' (2021) 27 Nature Medicine 582.",
+  "short": "Wu and others"
+ },
+ "s8-youssef-a-2023": {
+  "full": "Alexey Youssef and others, 'External Validation of AI Models in Health Should Be Replaced with Recurring Local Validation' (2023) 29 Nature Medicine 2686.",
+  "short": "Youssef and others"
+ },
+ "s8-shah-nh-2024": {
+  "full": "Nigam H Shah and others, 'A Nationwide Network of Health AI Assurance Laboratories' (2024) 331 JAMA 245.",
+  "short": "Shah and others"
+ },
+ "s8-joint-commission-coaliti-2025": {
+  "full": "The Joint Commission and Coalition for Health AI, *Guidance on the Responsible Use of AI in Healthcare (RUAIH)* (2025) <https://www.chai.org/news/joint-commission-and-coalition-for-health-ai-chai-release-initial-guidance> accessed 14 October 2026.",
+  "short": "Joint Commission and CHAI"
+ },
+ "s8-regulation-nd": {
+  "full": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act) [2024] OJ L2024/1689.",
+  "short": "AI Act"
+ },
+ "s8-regulation-nd-2": {
+  "full": "Regulation (EU) 2026/1744 [full title and date to be confirmed against the Official Journal] [2026] OJ L2026/1744.",
+  "short": "Regulation (EU) 2026/1744"
+ },
+ "s8-mdcg-2025-6-ai-board-2025": {
+  "full": "Medical Device Coordination Group and Artificial Intelligence Board, 'MDCG 2025-6: FAQ on Interplay between the MDR/IVDR and the AI Act' (European Commission 2025) <https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en> accessed 14 October 2026.",
+  "short": "MDCG 2025-6"
+ },
+ "s8-van-kolfschooten-h-2024": {
+  "full": "Hannah van Kolfschooten and Janneke van Oirschot, 'The EU Artificial Intelligence Act (2024): Implications for Healthcare' (2024) 149 Health Policy 105152.",
+  "short": "van Kolfschooten and van Oirschot"
+ },
+ "s8-us-fda-2024": {
+  "full": "US Food and Drug Administration, *Marketing Submission Recommendations for a Predetermined Change Control Plan for Artificial Intelligence-Enabled Device Software Functions* (Guidance for Industry and Food and Drug Administration Staff, December 2024) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence> accessed 14 October 2026.",
+  "short": "FDA, *PCCP Guidance*"
+ },
+ "s8-us-fda-2025": {
+  "full": "US Food and Drug Administration, *Artificial Intelligence-Enabled Device Software Functions: Lifecycle Management and Marketing Submission Recommendations* (Draft Guidance for Industry and Food and Drug Administration Staff, January 2025) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/artificial-intelligence-enabled-device-software-functions-lifecycle-management-and-marketing> accessed 14 October 2026.",
+  "short": "FDA, *AI-Enabled Device Software Functions*"
+ },
+ "s8-us-fda-2026": {
+  "full": "US Food and Drug Administration, *Clinical Decision Support Software* (Guidance for Industry and Food and Drug Administration Staff, January 2026) <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software> accessed 14 October 2026.",
+  "short": "FDA, *Clinical Decision Support Software*"
+ },
+ "s8-world-health-organizatio-2024": {
+  "full": "World Health Organization, *Ethics and Governance of Artificial Intelligence for Health: Guidance on Large Multi-Modal Models* (WHO 2024) <https://www.who.int/publications/i/item/9789240084759> accessed 14 October 2026.",
+  "short": "WHO, *Guidance on Large Multi-Modal Models*"
+ },
+ "s8-collins-gs-2024": {
+  "full": "Gary S Collins and others, 'TRIPOD+AI Statement: Updated Guidance for Reporting Clinical Prediction Models That Use Regression or Machine Learning Methods' (2024) 385 BMJ e078378.",
+  "short": "Collins and others"
+ },
+ "s8-gallifant-j-2025": {
+  "full": "Jack Gallifant and others, 'The TRIPOD-LLM Reporting Guideline for Studies Using Large Language Models' (2025) 31 Nature Medicine 60.",
+  "short": "Gallifant and others"
+ },
+ "s8-liu-x-2020": {
+  "full": "Xiaoxuan Liu and others, 'Reporting Guidelines for Clinical Trial Reports for Interventions Involving Artificial Intelligence: The CONSORT-AI Extension' (2020) 26 Nature Medicine 1364.",
+  "short": "Liu and others, 'Reporting Guidelines for Clinical Trial…'"
+ },
+ "s8-cruz-rivera-s-2020": {
+  "full": "Samantha Cruz Rivera and others, 'Guidelines for Clinical Trial Protocols for Interventions Involving Artificial Intelligence: The SPIRIT-AI Extension' (2020) 26 Nature Medicine 1351.",
+  "short": "Rivera and others"
+ },
+ "s8-vasey-b-2022": {
+  "full": "Baptiste Vasey and others, 'Reporting Guideline for the Early-Stage Clinical Evaluation of Decision Support Systems Driven by Artificial Intelligence: DECIDE-AI' (2022) 28 Nature Medicine 924.",
+  "short": "Vasey and others"
+ },
+ "s8-chart-collaborative-2025": {
+  "full": "The CHART Collaborative, 'Reporting Guideline for Chatbot Health Advice Studies: The Chatbot Assessment Reporting Tool (CHART) Statement' (2025) 4 BMJ Medicine e001632.",
+  "short": "CHART Collaborative"
+ },
+ "s8-lekadir-k-2025": {
+  "full": "Karim Lekadir and others, 'FUTURE-AI: International Consensus Guideline for Trustworthy and Deployable Artificial Intelligence in Healthcare' (2025) 388 BMJ e081554.",
+  "short": "Lekadir and others"
+ }
 }

@@ -32,6 +32,8 @@
   const state = {
     sb: null, session: null, me: null,
     papers: [], claims: [], notes: [], readers: [], materials: [],
+    chapter_state: [], chapter_sections: [], section_versions: [], draft_claims: [], claim_reviews: [],
+    paper_reviews: [], section_approvals: [], paper_files: [], editing: null,
     filters: { q: '', section: '', tag: 'ranked', status: '', access: '' },
     openPaperId: null, editPaperId: null, channel: null,
   };
@@ -112,7 +114,8 @@
 
   /* ---------- data ---------- */
 
-  const TABLES = ['papers', 'claims', 'notes', 'readers', 'materials'];
+  const TABLES = ['papers', 'claims', 'notes', 'readers', 'materials', 'chapter_state', 'chapter_sections', 'section_versions',
+    'draft_claims', 'claim_reviews', 'paper_reviews', 'section_approvals', 'paper_files'];
 
   async function loadTable(table) {
     const { data, error } = await state.sb.from(table).select('*');
@@ -230,7 +233,9 @@
         h('button', { class: 'paper-title', type: 'button', onclick: () => openPaper(p.id) }, p.title || shortCite(p)),
         h('p', { class: 'paper-meta' }, `${shortCite(p)} · ${SECTIONS[p.section]}${p.added_by ? ` · added by ${p.added_by === uid() ? 'you' : readerName(p.added_by)}` : ''}`),
         p.why_read ? h('p', { class: 'paper-meta' }, p.why_read) : null,
-        h('div', { class: 'paper-badges' }, tagPill(p), accessBadge(p), flagBadges(p))),
+        h('div', { class: 'paper-badges' }, tagPill(p), accessBadge(p),
+          filesOf(p.id).length ? h('span', { class: 'badge badge-oa' }, 'PDF shared') : null, flagBadges(p),
+          stage() === 'claim_review' && myClaim(p.id) && needsMyCheck(p.id) ? h('span', { class: 'badge badge-warn' }, 'Claims to check') : null)),
       h('div', { class: 'paper-side' }, h('div', { class: 'readers' }, readerChips(p)), claimButton(p)));
   }
 
@@ -359,6 +364,15 @@
         h('div', { class: 'tile' },
           h('div', { class: 'tile-value' }, String(mine.length)),
           h('div', { class: 'tile-label' }, `Your claims · ${mine.filter((c) => c.status === 'done').length} done`))),
+      state.section_versions.length ? (() => {
+        const aiClaims = state.draft_claims.filter((c) => c.basis !== 'reader' && c.status !== 'dropped');
+        const checked = aiClaims.filter((c) => reviewsOf(c.id).length).length;
+        const approved = [2, 3, 4, 5, 6, 7, 8].filter((sec) => { const v = latestVersion(sec); return v && approvalsOf(v.id).length >= 2; }).length;
+        return h('section', { class: 'card stack' },
+          h('div', { class: 'section-head' }, h('h2', {}, 'Writing the chapter'), h('a', { href: '#/chapter' }, 'Open the chapter')),
+          stageBanner(),
+          h('p', {}, `${checked} of ${aiClaims.length} claims checked · ${new Set(state.paper_reviews.map((r) => r.paper_id)).size} papers with a decision · ${approved} of 7 sections approved · ${chapterCounts().total.toLocaleString()} words`));
+      })() : null,
       h('section', { class: 'card stack' },
         h('h2', {}, 'Progress by tag'),
         h('div', { class: 'legend' },
@@ -406,6 +420,7 @@
       if (f.tag && f.tag !== 'ranked' && f.tag !== 'added' && p.tag !== f.tag) return false;
       if (f.access === 'oa' && !p.is_oa) return false;
       if (f.access === 'closed' && p.is_oa) return false;
+      if (f.access === 'shared' && !filesOf(p.id).length) return false;
       if (f.status) {
         const st = paperState(p);
         if (f.status === 'open' && !(st === 'open' || st === 'partial')) return false;
@@ -453,7 +468,7 @@
           ['added', `Added by readers (${state.papers.filter((p) => p.added_by).length})`],
           ['essential', 'Essential read'], ['should', 'Should read'], ['mildly', 'Mildly interesting'], ['reference', 'Other references']], 'tag'),
         select('f-status', 'Reading status', [['', 'Any status'], ['open', 'Needs readers'], ['progress', 'Being read'], ['done', 'Fully read'], ['mine', 'Claimed by me']], 'status'),
-        select('f-access', 'Access', [['', 'Any access'], ['oa', 'Free full text'], ['closed', 'Paywalled']], 'access')),
+        select('f-access', 'Access', [['', 'Any access'], ['oa', 'Free full text'], ['closed', 'Paywalled'], ['shared', 'PDF shared by a reader']], 'access')),
       listHost));
     drawList();
   }
@@ -468,7 +483,12 @@
         papers.length ? h('div', { class: 'paper-list' }, papers.map(paperRow)) : h('p', { class: 'empty' }, 'Nothing here yet.'));
     });
     const notesOnly = state.notes.filter((n) => n.user_id === uid() && !myClaim(n.paper_id)).map((n) => paperById(n.paper_id)).filter(Boolean);
+    const toCheck = stage() === 'claim_review' ? mine.map((c) => paperById(c.paper_id)).filter((p) => p && needsMyCheck(p.id)) : [];
     mount(h('div', { class: 'stack-lg' },
+      stage() === 'claim_review' ? h('section', { class: 'stack' },
+        h('h2', {}, `Claims to check (${toCheck.length})`),
+        h('p', { class: 'muted small' }, 'Papers you are reading that the draft cites. Open each one and check its claims under "In the draft".'),
+        toCheck.length ? h('div', { class: 'paper-list' }, toCheck.map(paperRow)) : h('p', { class: 'empty' }, 'All done: thank you.')) : null,
       h('div', { class: 'stack' },
         h('h1', {}, 'My reading'),
         h('p', { class: 'muted' }, mine.length
@@ -700,14 +720,7 @@
   function fileSize(n) { return n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`; }
   function extension(name) { return (name.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase() || ''; }
 
-  async function openMaterial(m) {
-    // Open the tab straight away (pop-up blockers stop tabs opened after a wait), then send it to a short-lived link
-    const win = window.open('', '_blank');
-    if (win) win.opener = null;
-    const { data, error } = await state.sb.storage.from('materials').createSignedUrl(m.storage_path, 600);
-    if (error) { if (win) win.close(); toast(friendlyError(error), true); return; }
-    if (win) win.location.href = data.signedUrl; else location.href = data.signedUrl;
-  }
+  function openMaterial(m) { return openStored('materials', m.storage_path); }
 
   async function removeMaterial(m) {
     if (!confirm(`Remove "${m.title}" for everyone?`)) return;
@@ -808,7 +821,7 @@
       },
     },
     h('h2', {}, 'Share a document'),
-    h('p', { class: 'muted small' }, 'Drafts, figures, notes from a meeting, a useful report. Everyone signed in to the tracker can open it. Please don\'t upload publisher PDFs of paywalled papers.'),
+    h('p', { class: 'muted small' }, 'Drafts, figures, notes from a meeting, a useful report. Everyone signed in to the tracker can open it. To share the PDF of a paper on the list, upload it on the paper itself (open it from Papers).'),
     h('div', { class: 'field' }, h('label', { for: 'm-title' }, 'Title'), title),
     h('div', { class: 'field' }, h('label', { for: 'm-description' }, 'Description'), description),
     h('div', { class: 'row', role: 'radiogroup', 'aria-label': 'What are you sharing?' }, radio('file', 'Upload a file'), radio('link', 'Add a link')),
@@ -823,6 +836,616 @@
       h('section', { class: 'stack' }, sharedHeading = h('h2'), sharedHost = h('div')),
       form));
     drawMaterials();
+  }
+
+  /* ---------- writing the chapter ---------- */
+
+  const STAGES = {
+    reading: ['Reading', 'Claim papers and take notes. The AI draft of the chapter will appear here.'],
+    claim_review: ['Checking claims', 'The AI draft is up. Open each paper you are reading: under "In the draft" its claims are shown in their sentences. Mark each one supported, needs change or not supported, add claims or information, or reject the paper.'],
+    section_review: ['Editing and approving', 'The draft has been rebuilt from your feedback. Edit the text where needed, then approve sections. Each section needs two approvals of its latest version.'],
+    final: ['Final', 'The chapter has been assembled. The Word file is on the Materials page.'],
+  };
+  const VERDICTS = { supported: 'Supported', needs_change: 'Needs change', not_supported: 'Not supported' };
+  const DECISIONS = { approve: 'Approve', approve_with_additions: 'Approve with additions', reject: 'Reject the paper' };
+  const CITE_RE = /\[@([^\]]+)\]/g;
+  const INLINE_RE = /\[@[^\]]+\]|\*\*[^*]+\*\*|\*[^*\s][^*]*\*/g;
+  const WORD_LIMIT = [5000, 6000];
+
+  function stage() { return (state.chapter_state[0] || {}).stage || 'reading'; }
+  function sectionInfo(s) {
+    return state.chapter_sections.find((x) => x.section === s) || { section: s, title: SECTIONS[s], word_budget: 0, citation_budget: 0 };
+  }
+  function versionsOf(s) { return state.section_versions.filter((v) => v.section === s).sort((a, b) => a.version - b.version); }
+  function latestVersion(s) { const v = versionsOf(s); return v[v.length - 1] || null; }
+  function approvalsOf(versionId) { return state.section_approvals.filter((a) => a.section_version_id === versionId); }
+  function claimsOfPaper(pid) { return state.draft_claims.filter((c) => c.paper_id === pid); }
+  function reviewsOf(claimId) { return state.claim_reviews.filter((r) => r.claim_id === claimId); }
+  function myReview(claimId) { return state.claim_reviews.find((r) => r.claim_id === claimId && r.user_id === uid()); }
+  function myDecision(pid) { return state.paper_reviews.find((r) => r.paper_id === pid && r.user_id === uid()); }
+  function filesOf(pid) { return state.paper_files.filter((f) => f.paper_id === pid); }
+  function needsMyCheck(pid) {
+    const claims = claimsOfPaper(pid).filter((c) => c.basis !== 'reader' && c.status !== 'dropped');
+    return claims.length > 0 && (claims.some((c) => !myReview(c.id)) || !myDecision(pid));
+  }
+
+  function parseCite(inner) {
+    return inner.split(';').map((s) => s.trim().replace(/^@/, '').trim()).filter(Boolean).map((s) => {
+      const i = s.indexOf(',');
+      return i < 0 ? { key: s, pin: '' } : { key: s.slice(0, i).trim(), pin: s.slice(i + 1).trim() };
+    });
+  }
+
+  // Same rule as scripts/chapter_lib.py: tokens with a letter or digit; citation keys don't count
+  function countWords(text) {
+    return (text || '').replace(CITE_RE, ' ').replace(/[#*_>`]/g, ' ').split(/\s+/)
+      .filter((t) => /[0-9A-Za-zÀ-ÿ]/.test(t)).length;
+  }
+
+  function withPin(full, pin) {
+    const f = full.trim().replace(/\.$/, '');
+    if (!pin) return f;
+    const i = f.indexOf(' <http');
+    return i >= 0 ? `${f.slice(0, i)} ${pin}${f.slice(i)}` : `${f}, ${pin}`;
+  }
+
+  // Footnotes numbered across the chapter: the full OSCOLA form first, then "Short (n X)", or "ibid"
+  function buildFootnotes(bodies) {
+    const first = new Map();
+    const out = {};
+    let n = 0;
+    let previous = null;
+    for (const [section, body] of bodies) {
+      const notes = [];
+      for (const m of body.matchAll(CITE_RE)) {
+        n += 1;
+        const cites = parseCite(m[1]);
+        const parts = cites.map(({ key, pin }) => {
+          const p = paperById(key);
+          if (!p) return `[unknown reference: ${key}]`;
+          if (cites.length === 1 && previous && previous.length === 1 && previous[0].key === key) return `ibid${pin ? ' ' + pin : ''}`;
+          if (!first.has(key)) { first.set(key, n); return withPin(p.oscola || p.citation, pin); }
+          return `${p.oscola_short || p.short_cite || key} (n ${first.get(key)})${pin ? ' ' + pin : ''}`;
+        });
+        notes.push({ start: m.index, end: m.index + m[0].length, n, text: `${parts.join('; ')}.`, keys: cites.map((c) => c.key) });
+        previous = cites;
+      }
+      out[section] = notes;
+    }
+    return out;
+  }
+
+  // Words per section and for the whole chapter (abstract, headings, text and footnotes), as build_docx.py counts them
+  function chapterCounts(override) {
+    const bodies = [];
+    for (let s = 1; s <= 9; s += 1) {
+      if (override && override.section === s) bodies.push([s, override.body]);
+      else { const v = latestVersion(s); if (v) bodies.push([s, v.body]); }
+    }
+    const notes = buildFootnotes(bodies);
+    const per = {};
+    let total = countWords((state.chapter_state[0] || {}).abstract || '');
+    for (const [s, body] of bodies) {
+      const text = countWords(body);
+      const fn = notes[s].reduce((sum, x) => sum + countWords(x.text), 0);
+      per[s] = { text, notes: fn, cites: new Set(notes[s].flatMap((x) => x.keys)).size };
+      total += text + fn + countWords(`${s}. ${sectionInfo(s).title}`);
+    }
+    return { per, total, notes };
+  }
+
+  function italics(text) {
+    // Footnotes: *title* in italics, everything else as text
+    return text.split(/(\*[^*]+\*)/).filter(Boolean).map((part) => (/^\*[^*]+\*$/.test(part) ? h('em', {}, part.slice(1, -1)) : part));
+  }
+
+  // Our Markdown subset as DOM nodes, never HTML: paragraphs, ## and ### headings, *italic*, **bold**,
+  // and citation keys as footnote numbers. Claim anchors found in the text are highlighted.
+  function renderText(body, opts) {
+    const o = opts || {};
+    const noteAt = new Map((o.notes || []).map((x) => [x.start, x]));
+    const ranges = [];
+    for (const c of o.claims || []) {
+      const i = c.anchor ? body.indexOf(c.anchor) : -1;
+      if (i >= 0) ranges.push({ start: i, end: i + c.anchor.length, claim: c });
+    }
+    const claimAt = (pos) => ranges.find((r) => pos >= r.start && pos < r.end);
+    const mark = (claim, content) => h('mark', {
+      class: `claim claim-${claim.status}`, title: `${shortCite(paperById(claim.paper_id) || {})}: ${claim.claim}`,
+      tabindex: o.onClaim ? '0' : null, role: o.onClaim ? 'button' : null,
+      onclick: o.onClaim ? () => o.onClaim(claim) : null,
+      onkeydown: o.onClaim ? (e) => { if (e.key === 'Enter') o.onClaim(claim); } : null,
+    }, content);
+    const emit = (parent, text, start) => {
+      let i = 0;
+      while (i < text.length) {
+        const r = claimAt(start + i);
+        let j = i + 1;
+        while (j < text.length && claimAt(start + j) === r) j += 1;
+        const piece = text.slice(i, j);
+        parent.append(r ? mark(r.claim, piece) : piece);
+        i = j;
+      }
+    };
+    const inline = (parent, text, base) => {
+      let last = 0;
+      for (const m of text.matchAll(INLINE_RE)) {
+        if (m.index > last) emit(parent, text.slice(last, m.index), base + last);
+        const tok = m[0];
+        const abs = base + m.index;
+        if (tok.startsWith('[@')) {
+          const note = noteAt.get(abs);
+          const sup = h('sup', { class: 'fn', title: note ? note.text.replace(/\*/g, '') : '' }, note ? String(note.n) : '*');
+          const r = claimAt(abs);
+          parent.append(r ? mark(r.claim, sup) : sup);
+        } else {
+          const strong = tok.startsWith('**');
+          const el = h(strong ? 'strong' : 'em');
+          emit(el, tok.slice(strong ? 2 : 1, strong ? -2 : -1), abs + (strong ? 2 : 1));
+          parent.append(el);
+        }
+        last = m.index + tok.length;
+      }
+      if (last < text.length) emit(parent, text.slice(last), base + last);
+    };
+    const blocks = [];
+    const re = /\n[ \t]*\n/g;
+    let pos = 0;
+    let m;
+    const chunks = [];
+    while ((m = re.exec(body)) !== null) { chunks.push([pos, body.slice(pos, m.index)]); pos = m.index + m[0].length; }
+    chunks.push([pos, body.slice(pos)]);
+    for (const [start, raw] of chunks) {
+      const text = raw.trimStart();
+      if (!text.trim()) continue;
+      const offset = start + raw.length - text.length;
+      const head = text.match(/^(#{2,4})\s+/);
+      const el = head ? h(head[1].length <= 2 ? 'h3' : 'h4', { class: 'chapter-sub' }) : h('p');
+      inline(el, text.slice(head ? head[0].length : 0).trimEnd(), offset + (head ? head[0].length : 0));
+      blocks.push(el);
+    }
+    return blocks;
+  }
+
+  // Word-level differences between two versions
+  function diffWords(a, b) {
+    const x = a.match(/\S+\s*/g) || [];
+    const y = b.match(/\S+\s*/g) || [];
+    if (x.length * y.length > 4e6) return [h('p', { class: 'muted' }, 'These versions are too long to compare word by word.')];
+    const w = y.length + 1;
+    const dp = new Int32Array((x.length + 1) * w);
+    for (let i = x.length - 1; i >= 0; i -= 1) {
+      for (let j = y.length - 1; j >= 0; j -= 1) {
+        dp[i * w + j] = x[i].trim() === y[j].trim() ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1]);
+      }
+    }
+    const out = [];
+    const push = (kind, text) => {
+      const lastNode = out[out.length - 1];
+      if (lastNode && lastNode.kind === kind) lastNode.text += text; else out.push({ kind, text });
+    };
+    let i = 0;
+    let j = 0;
+    while (i < x.length && j < y.length) {
+      if (x[i].trim() === y[j].trim()) { push('same', y[j]); i += 1; j += 1; }
+      else if (dp[(i + 1) * w + j] >= dp[i * w + j + 1]) { push('del', x[i]); i += 1; }
+      else { push('ins', y[j]); j += 1; }
+    }
+    while (i < x.length) { push('del', x[i]); i += 1; }
+    while (j < y.length) { push('ins', y[j]); j += 1; }
+    return [h('div', { class: 'diff' }, out.map((part) => (part.kind === 'same' ? part.text : h(part.kind, {}, part.text))))];
+  }
+
+  function stageBanner() {
+    const [label, text] = STAGES[stage()];
+    return h('div', { class: 'stage-banner' }, h('strong', {}, label), h('span', {}, text));
+  }
+
+  function renderChapter(arg, sub) {
+    const s = Number(arg);
+    if (s >= 1 && s <= 9) {
+      if (sub === 'history') renderHistory(s);
+      else renderSection(s);
+      return;
+    }
+    const counts = chapterCounts();
+    const written = state.section_versions.length > 0;
+    const rows = Object.keys(SECTIONS).map(Number).map((sec) => {
+      const info = sectionInfo(sec);
+      const v = latestVersion(sec);
+      const c = counts.per[sec];
+      const claims = state.draft_claims.filter((x) => x.section === sec && x.basis !== 'reader' && x.status !== 'dropped');
+      const reviewed = claims.filter((x) => reviewsOf(x.id).length).length;
+      const approvals = v ? approvalsOf(v.id).length : 0;
+      return h('tr', {},
+        h('td', {}, v ? h('a', { href: `#/chapter/${sec}` }, `${sec}. ${info.title}`) : `${sec}. ${info.title}`),
+        h('td', {}, v ? `v${v.version} · ${v.created_by ? readerName(v.created_by) : 'AI'}` : (sec === 1 || sec === 9 ? 'written last' : 'not yet')),
+        h('td', { class: 'num' + (c && c.text > info.word_budget * 1.1 ? ' over' : '') }, `${c ? c.text : '—'} / ${info.word_budget}`),
+        h('td', { class: 'num' }, c ? String(c.notes) : '—'),
+        h('td', { class: 'num' }, claims.length ? `${reviewed} / ${claims.length}` : '—'),
+        h('td', { class: 'num' + (approvals >= 2 ? ' ok' : '') }, v && sec >= 2 && sec <= 8 ? `${approvals} / 2` : '—'));
+    });
+    const pct = Math.min(100, (100 * counts.total) / WORD_LIMIT[1]);
+    mount(h('div', { class: 'stack-lg' },
+      h('div', { class: 'stack' }, h('h1', {}, 'The chapter'), stageBanner()),
+      written ? h('section', { class: 'card stack' },
+        h('h2', {}, 'Length'),
+        h('p', {}, `${counts.total.toLocaleString()} words, counting the abstract, headings and footnotes. The publisher's limit is ${WORD_LIMIT[0].toLocaleString()}–${WORD_LIMIT[1].toLocaleString()} words including references.`),
+        h('div', { class: 'bar', role: 'img', 'aria-label': `${counts.total} of ${WORD_LIMIT[1]} words` },
+          h('div', { class: counts.total > WORD_LIMIT[1] ? 'bar-over' : 'bar-done', style: `width:${pct}%` })))
+        : h('p', { class: 'empty' }, 'The AI draft has not been posted yet. Until then, keep reading and taking notes.'),
+      h('section', { class: 'stack' },
+        h('h2', {}, 'Sections'),
+        h('div', { class: 'table-wrap' }, h('table', {},
+          h('tr', {}, h('th', {}, 'Section'), h('th', {}, 'Latest version'), h('th', { class: 'num' }, 'Words / budget'),
+            h('th', { class: 'num' }, 'Footnote words'), h('th', { class: 'num' }, 'Claims checked'), h('th', { class: 'num' }, 'Approvals')),
+          rows)))));
+  }
+
+  async function approveSection(v, approve) {
+    const query = approve
+      ? state.sb.from('section_approvals').insert({ section_version_id: v.id, user_id: uid() })
+      : state.sb.from('section_approvals').delete().eq('section_version_id', v.id).eq('user_id', uid());
+    const { error } = await query;
+    if (error) { toast(friendlyError(error), true); return; }
+    await loadTable('section_approvals');
+    toast(approve ? 'Approved.' : 'Approval withdrawn.');
+    renderSection(v.section);
+  }
+
+  function renderSection(s) {
+    if (state.editing && state.editing.section === s) { renderEditor(s); return; }
+    const info = sectionInfo(s);
+    const v = latestVersion(s);
+    const back = h('a', { href: '#/chapter' }, '← The chapter');
+    if (!v) {
+      mount(h('div', { class: 'stack' }, back, h('h1', {}, `${s}. ${info.title}`), h('p', { class: 'empty' }, 'Not written yet.')));
+      return;
+    }
+    const counts = chapterCounts();
+    const notes = counts.notes[s] || [];
+    const c = counts.per[s];
+    const claims = state.draft_claims.filter((x) => x.section === s && x.anchor);
+    const approvals = approvalsOf(v.id);
+    const iApproved = approvals.some((a) => a.user_id === uid());
+    const earlier = !iApproved && state.section_approvals.some((a) => a.user_id === uid() && versionsOf(s).some((x) => x.id === a.section_version_id));
+    const reviewable = s >= 2 && s <= 8;
+    const open = stage() === 'section_review' && reviewable;
+    const claimItem = (cl) => {
+      const p = paperById(cl.paper_id) || {};
+      const verdicts = reviewsOf(cl.id).map((r) => VERDICTS[r.verdict]);
+      const found = v.body.includes(cl.anchor);
+      return h('li', { class: 'claim-item' },
+        h('button', { class: 'paper-title', type: 'button', onclick: () => openPaper(cl.paper_id) }, shortCite(p)),
+        h('p', { class: 'small' }, cl.claim),
+        h('p', { class: 'small muted' }, [verdicts.length ? verdicts.join(', ') : 'Not checked yet',
+          cl.status !== 'open' ? ` · ${cl.status}` : '', found ? '' : ' · no longer in this version'].join('')));
+    };
+    mount(h('div', { class: 'stack-lg' },
+      h('div', { class: 'stack' },
+        back,
+        h('h1', {}, `${s}. ${info.title}`),
+        h('p', { class: 'muted' }, `Version ${v.version} by ${v.created_by ? readerName(v.created_by) : 'the AI'}, ${new Date(v.created_at).toLocaleString()}`
+          + `${v.change_note ? ` — ${v.change_note}` : ''}`),
+        h('p', { class: 'small' + (c.text > info.word_budget * 1.1 ? ' over' : '') },
+          `${c.text} words of text (budget ${info.word_budget}) + ${c.notes} words in ${plural(notes.length, 'footnote')} · chapter total ${counts.total.toLocaleString()} of ${WORD_LIMIT[1].toLocaleString()}`),
+        stageBanner(),
+        h('div', { class: 'row' },
+          open ? h('button', { class: iApproved ? 'btn btn-secondary' : 'btn', type: 'button', onclick: () => approveSection(v, !iApproved) },
+            iApproved ? 'Withdraw my approval' : 'Approve this version') : null,
+          reviewable ? h('span', { class: 'small ' + (approvals.length >= 2 ? 'ok' : 'muted') },
+            `${approvals.length} of 2 approvals${approvals.length ? `: ${approvals.map((a) => (a.user_id === uid() ? 'you' : readerName(a.user_id))).join(', ')}` : ''}`) : null,
+          earlier ? h('span', { class: 'badge badge-warn' }, 'You approved an earlier version') : null,
+          open ? h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => startEdit(s) }, 'Edit the text') : null,
+          versionsOf(s).length > 1 ? h('a', { class: 'btn btn-quiet', href: `#/chapter/${s}/history` }, `History (${versionsOf(s).length} versions)`) : null)),
+      h('div', { class: 'chapter-layout' },
+        h('article', { class: 'chapter-text card' },
+          renderText(v.body, { notes, claims, onClaim: (cl) => openPaper(cl.paper_id) }),
+          notes.length ? h('ol', { class: 'footnotes', start: String(notes[0].n) }, notes.map((x) => h('li', { value: String(x.n) }, italics(x.text)))) : null),
+        claims.length ? h('aside', { class: 'chapter-claims stack' },
+          h('h2', {}, `Claims (${claims.length})`),
+          h('p', { class: 'small muted' }, 'Highlighted in the text. Click one to open its paper.'),
+          h('ol', { class: 'list-plain' }, claims.map(claimItem))) : null)));
+  }
+
+  function startEdit(s) {
+    const v = latestVersion(s);
+    state.editing = { section: s, base: v.version, body: v.body, note: '' };
+    renderSection(s);
+  }
+
+  function renderEditor(s) {
+    const ed = state.editing;
+    const info = sectionInfo(s);
+    const counts = h('p', { class: 'small', role: 'status' });
+    const area = h('textarea', { id: 'ed-body', class: 'editor', rows: '22', spellcheck: 'true', 'aria-label': `Text of section ${s}`, value: ed.body });
+    const preview = h('div', { class: 'chapter-text card', hidden: true });
+    const update = () => {
+      ed.body = area.value;
+      const c = chapterCounts({ section: s, body: area.value });
+      counts.textContent = `${c.per[s].text} words of text (budget ${info.word_budget}) + ${c.per[s].notes} in footnotes · chapter total ${c.total.toLocaleString()} of ${WORD_LIMIT[1].toLocaleString()}`;
+      counts.classList.toggle('over', c.total > WORD_LIMIT[1] || c.per[s].text > info.word_budget * 1.1);
+      if (!preview.hidden) preview.replaceChildren(...renderText(area.value, { notes: c.notes[s] }));
+    };
+    area.addEventListener('input', update);
+    const insert = (text) => {
+      const at = area.selectionStart ?? area.value.length;
+      area.value = area.value.slice(0, at) + text + area.value.slice(area.selectionEnd ?? at);
+      area.focus();
+      area.selectionStart = area.selectionEnd = at + text.length;
+      update();
+    };
+    const results = h('div', { class: 'cite-results' });
+    const search = h('input', {
+      type: 'search', placeholder: 'Find a paper to cite…', 'aria-label': 'Find a paper to cite',
+      oninput: (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        const hits = q.length < 2 ? [] : state.papers.filter((p) => `${p.short_cite} ${p.title} ${p.citation}`.toLowerCase().includes(q)).slice(0, 8);
+        results.replaceChildren(...hits.map((p) => h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => insert(`[@${p.id}]`) },
+          `${shortCite(p)} — ${(p.title || '').slice(0, 70)}`)));
+      },
+    });
+    const note = h('input', { type: 'text', id: 'ed-note', maxlength: '500', value: ed.note, placeholder: 'What did you change? Shown in the history.', oninput: (e) => { ed.note = e.target.value; } });
+    const save = async (e) => {
+      e.target.disabled = true;
+      const { data, error } = await state.sb.from('section_versions')
+        .insert({ section: s, version: ed.base + 1, body: area.value, change_note: note.value.trim() || null, created_by: uid() }).select();
+      e.target.disabled = false;
+      if (error) {
+        toast(/newer version/i.test(error.message)
+          ? 'Someone else saved a newer version while you were editing. Your text is still here: copy it, then Cancel to see their version and edit again.'
+          : friendlyError(error), true);
+        return;
+      }
+      state.editing = null;
+      await loadTable('section_versions');
+      toast(`Saved as version ${data[0].version}. Approvals start again for this version.`);
+      renderSection(s);
+    };
+    mount(h('div', { class: 'stack' },
+      h('h1', {}, `Editing ${s}. ${info.title}`),
+      h('p', { class: 'muted small' }, 'Cite a paper with its key in square brackets: [@paper-key], with a page if you like: [@paper-key, 47]. Use the search below to insert keys. Footnotes are numbered and written in OSCOLA automatically. Leave a blank line between paragraphs; *italic*, **bold** and ### subheadings work.'),
+      h('div', { class: 'stack', style: 'gap:6px' }, search, results),
+      area, counts,
+      h('div', { class: 'field' }, h('label', { for: 'ed-note' }, 'Change note'), note),
+      h('div', { class: 'row' },
+        h('button', { class: 'btn', type: 'button', onclick: save }, 'Save as a new version'),
+        h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => { preview.hidden = !preview.hidden; update(); } }, 'Show or hide preview'),
+        h('button', {
+          class: 'btn btn-quiet', type: 'button',
+          onclick: () => {
+            if (area.value !== latestVersion(s).body && !confirm('Discard your changes?')) return;
+            state.editing = null;
+            renderSection(s);
+          },
+        }, 'Cancel')),
+      preview));
+    update();
+  }
+
+  function renderHistory(s) {
+    const versions = versionsOf(s).slice().reverse();
+    const pick = (v) => {
+      const prev = versionsOf(s).find((x) => x.version === v.version - 1);
+      panel.replaceChildren(
+        h('h2', {}, `Version ${v.version}${prev ? ` compared with version ${prev.version}` : ''}`),
+        h('p', { class: 'small muted' }, 'Added words are highlighted; removed words are struck through.'),
+        ...(prev ? diffWords(prev.body, v.body) : renderText(v.body)));
+    };
+    const panel = h('div', { class: 'card stack' });
+    mount(h('div', { class: 'stack-lg' },
+      h('div', { class: 'stack' },
+        h('a', { href: `#/chapter/${s}` }, `← ${s}. ${sectionInfo(s).title}`),
+        h('h1', {}, 'History')),
+      h('ol', { class: 'list-plain' }, versions.map((v) => h('li', {},
+        h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => pick(v) }, `Version ${v.version}`),
+        h('span', { class: 'small muted' }, ` ${v.created_by ? readerName(v.created_by) : 'AI'}, ${new Date(v.created_at).toLocaleString()} · ${approvalsOf(v.id).length} approval(s)${v.change_note ? ` — ${v.change_note}` : ''}`)))),
+      panel));
+    pick(versions[0]);
+  }
+
+  /* ---------- claims and PDFs in the paper dialog ---------- */
+
+  async function saveReview(claim, row) {
+    const { error } = await state.sb.from('claim_reviews').upsert({ claim_id: claim.id, user_id: uid(), ...row });
+    if (error) { toast(friendlyError(error), true); return false; }
+    return true;
+  }
+
+  async function refreshDraftPart(p, message) {
+    await Promise.all(['draft_claims', 'claim_reviews', 'paper_reviews'].map(loadTable));
+    const node = document.getElementById('dlg-draft');
+    if (node) node.replaceWith(draftPart(p));
+    if (message) toast(message);
+  }
+
+  function claimCard(p, claim, index, total, open) {
+    const mine = myReview(claim.id) || {};
+    let verdict = mine.verdict || '';
+    const others = reviewsOf(claim.id).filter((r) => r.user_id !== uid());
+    const basis = claim.basis === 'full_text' ? ['badge-oa', 'Drafted from the full text']
+      : claim.basis === 'abstract' ? ['badge-warn', 'Drafted from the abstract only: check carefully']
+        : ['badge-status', `Added by ${claim.added_by === uid() ? 'you' : readerName(claim.added_by)}`];
+    const page = h('input', { type: 'text', maxlength: '100', value: mine.page || '', 'aria-label': 'Page' });
+    const wording = h('input', { type: 'text', maxlength: '4000', value: mine.suggested_wording || '', 'aria-label': 'Suggested wording', placeholder: 'optional' });
+    const comment = h('textarea', { rows: '2', maxlength: '4000', value: mine.comment || '', 'aria-label': 'Comment', placeholder: 'optional' });
+    const buttons = Object.entries(VERDICTS).map(([key, label]) => h('button', {
+      class: `verdict verdict-${key}`, type: 'button', 'aria-pressed': String(verdict === key),
+      onclick: (e) => {
+        verdict = key;
+        e.target.parentNode.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === e.target)));
+      },
+    }, label));
+    const quote = claim.anchor ? claim.anchor.replace(CITE_RE, '').trim() : null;
+    return h('article', { class: 'claim-card' },
+      h('div', { class: 'row' },
+        h('span', { class: 'small muted' }, `Claim ${index + 1} of ${total}${claim.section ? ` · §${claim.section}` : ''}`),
+        h('span', { class: `badge ${basis[0]}` }, basis[1]),
+        claim.status !== 'open' ? h('span', { class: 'badge badge-status' }, claim.status === 'addressed' ? 'Addressed in the rebuild' : 'Dropped in the rebuild') : null,
+        claim.section && claim.anchor ? h('a', { class: 'small', href: `#/chapter/${claim.section}`, onclick: () => dialog.close() }, `Open §${claim.section}`) : null),
+      quote ? h('blockquote', {}, quote) : null,
+      h('p', {}, h('strong', {}, claim.anchor ? 'What the chapter says the paper shows: ' : 'Claim: '), claim.claim,
+        claim.pinpoint ? h('span', { class: 'muted' }, ` (p ${claim.pinpoint})`) : null),
+      others.length ? h('ul', { class: 'small list-plain' }, others.map((r) => h('li', {},
+        h('strong', {}, `${readerName(r.user_id)}: ${VERDICTS[r.verdict]}`),
+        [r.page ? ` · p ${r.page}` : '', r.suggested_wording ? ` · suggests: "${r.suggested_wording}"` : '', r.comment ? ` · ${r.comment}` : ''].join('')))) : null,
+      open && claim.basis !== 'reader' ? [
+        h('div', { class: 'choice', role: 'group', 'aria-label': 'Your verdict' }, buttons),
+        h('div', { class: 'claim-fields' },
+          h('div', { class: 'field' }, h('label', {}, 'Page', page)),
+          h('div', { class: 'field' }, h('label', {}, 'Suggested wording', wording))),
+        h('div', { class: 'field' }, h('label', {}, 'Comment', comment)),
+        h('div', { class: 'row' },
+          h('button', {
+            class: 'btn btn-small', type: 'button',
+            onclick: async () => {
+              if (!verdict) { toast('Choose Supported, Needs change or Not supported first.', true); return; }
+              if (await saveReview(claim, { verdict, page: page.value.trim() || null, suggested_wording: wording.value.trim() || null, comment: comment.value.trim() || null })) {
+                refreshDraftPart(p, 'Saved.');
+              }
+            },
+          }, mine.verdict ? 'Update my check' : 'Save my check'),
+          mine.verdict ? h('span', { class: 'small muted' }, `You said: ${VERDICTS[mine.verdict]}`) : null)] : null,
+      open && claim.basis === 'reader' && claim.added_by === uid() ? h('button', {
+        class: 'btn btn-quiet btn-small', type: 'button',
+        onclick: async () => {
+          if (!confirm('Remove this claim?')) return;
+          const { error } = await state.sb.from('draft_claims').delete().eq('id', claim.id);
+          if (error) { toast(friendlyError(error), true); return; }
+          refreshDraftPart(p, 'Claim removed.');
+        },
+      }, 'Remove my claim') : null);
+  }
+
+  function draftPart(p) {
+    const claims = claimsOfPaper(p.id);
+    const open = stage() === 'claim_review';
+    if (!claims.length && !open) return h('section', { id: 'dlg-draft', hidden: true });
+    const decision = myDecision(p.id) || {};
+    const others = state.paper_reviews.filter((r) => r.paper_id === p.id && r.user_id !== uid());
+    let choice = decision.decision || '';
+    const extra = h('textarea', { rows: '3', maxlength: '6000', value: decision.extra_info || '', 'aria-label': 'Extra information', placeholder: 'Extra information for the chapter, with pages (for "approve with additions")' });
+    const reason = h('textarea', { rows: '2', maxlength: '4000', value: decision.reason || '', 'aria-label': 'Reason for rejecting', placeholder: 'Why should the chapter not cite this paper? (for "reject")' });
+    const newClaim = h('textarea', { rows: '2', maxlength: '2000', 'aria-label': 'New claim', placeholder: 'What else does the paper show that the chapter should say?' });
+    const newPage = h('input', { type: 'text', maxlength: '100', 'aria-label': 'Page of the new claim', placeholder: 'Page' });
+    const saveDecision = async (value, extraText, reasonText) => {
+      const { error } = await state.sb.from('paper_reviews').upsert({
+        paper_id: p.id, user_id: uid(), decision: value, extra_info: extraText || null, reason: reasonText || null,
+      });
+      if (error) { toast(friendlyError(error), true); return false; }
+      return true;
+    };
+    const aiClaims = claims.filter((c) => c.basis !== 'reader' && c.status !== 'dropped');
+    return h('section', { class: 'stack', id: 'dlg-draft' },
+      h('h3', {}, `In the draft (${plural(claims.length, 'claim')})`),
+      open ? h('p', { class: 'small muted' }, 'Check each claim against the paper, then give your decision on the paper below.') : null,
+      claims.length ? claims.map((c, i) => claimCard(p, c, i, claims.length, open)) : h('p', { class: 'muted small' }, 'The draft does not cite this paper.'),
+      others.length ? h('ul', { class: 'small list-plain' }, others.map((r) => h('li', {},
+        h('strong', {}, `${readerName(r.user_id)}: ${DECISIONS[r.decision]}`),
+        r.extra_info ? ` · ${r.extra_info}` : '', r.reason ? ` · ${r.reason}` : ''))) : null,
+      open ? h('div', { class: 'card stack decision' },
+        h('h4', {}, 'Your decision on the paper'),
+        h('div', { class: 'choice', role: 'group', 'aria-label': 'Your decision' }, Object.entries(DECISIONS).map(([key, label]) => h('button', {
+          class: `verdict verdict-${key}`, type: 'button', 'aria-pressed': String(choice === key),
+          onclick: (e) => {
+            choice = key;
+            e.target.parentNode.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === e.target)));
+          },
+        }, label))),
+        extra, reason,
+        h('div', { class: 'row' },
+          h('button', {
+            class: 'btn btn-small', type: 'button',
+            onclick: async () => {
+              if (!choice) { toast('Choose a decision first.', true); return; }
+              if (choice === 'reject' && !reason.value.trim()) { toast('Say briefly why the paper should not be cited.', true); return; }
+              if (await saveDecision(choice, extra.value.trim(), reason.value.trim())) refreshDraftPart(p, 'Decision saved.');
+            },
+          }, 'Save my decision'),
+          aiClaims.length ? h('button', {
+            class: 'btn btn-secondary btn-small', type: 'button',
+            onclick: async () => {
+              for (const c of aiClaims.filter((x) => !myReview(x.id))) {
+                if (!(await saveReview(c, { verdict: 'supported' }))) return;
+              }
+              if (await saveDecision('approve', extra.value.trim(), null)) refreshDraftPart(p, 'Approved as drafted: every claim marked supported.');
+            },
+          }, 'Approve as drafted') : null,
+          decision.decision ? h('span', { class: 'small muted' }, `You said: ${DECISIONS[decision.decision]}`) : null)) : null,
+      open ? h('div', { class: 'stack', style: 'gap:8px' },
+        h('h4', {}, 'Add a claim'),
+        newClaim,
+        h('div', { class: 'row' }, newPage,
+          h('button', {
+            class: 'btn btn-secondary btn-small', type: 'button',
+            onclick: async () => {
+              const text = newClaim.value.trim();
+              if (text.length < 3) { toast('Write the claim first.', true); return; }
+              const { error } = await state.sb.from('draft_claims').insert({
+                paper_id: p.id, section: p.section, claim: text, pinpoint: newPage.value.trim() || null, basis: 'reader', added_by: uid(),
+              });
+              if (error) { toast(friendlyError(error), true); return; }
+              refreshDraftPart(p, 'Claim added.');
+            },
+          }, 'Add claim'))) : null);
+  }
+
+  async function openStored(bucket, path) {
+    // Open the tab straight away (pop-up blockers stop tabs opened after a wait), then send it to a short-lived link
+    const win = window.open('', '_blank');
+    if (win) win.opener = null;
+    const { data, error } = await state.sb.storage.from(bucket).createSignedUrl(path, 600);
+    if (error) { if (win) win.close(); toast(friendlyError(error), true); return; }
+    if (win) win.location.href = data.signedUrl; else location.href = data.signedUrl;
+  }
+
+  function filesPart(p) {
+    const files = filesOf(p.id);
+    const input = h('input', { type: 'file', accept: '.pdf,application/pdf', 'aria-label': 'Upload the PDF of this paper' });
+    const status = h('span', { class: 'small muted', role: 'status' });
+    input.addEventListener('change', async () => {
+      const f = input.files[0];
+      if (!f) return;
+      if (!/\.pdf$/i.test(f.name)) { toast('Please choose a PDF file.', true); return; }
+      if (f.size > MAX_FILE) { toast('Files can be up to 50 MB.', true); return; }
+      input.disabled = true;
+      status.textContent = `Uploading ${f.name}…`;
+      const safeName = f.name.normalize('NFKD').replace(/[^\w.-]+/g, '-').replace(/-+/g, '-').slice(-80);
+      const path = `${p.id}/${uid()}/${Date.now()}-${safeName}`;
+      const up = await state.sb.storage.from('papers').upload(path, f, { contentType: 'application/pdf', upsert: false });
+      if (up.error) { input.disabled = false; status.textContent = ''; toast(friendlyError(up.error), true); return; }
+      const { error } = await state.sb.from('paper_files').insert({ paper_id: p.id, storage_path: path, file_name: f.name, size_bytes: f.size, uploaded_by: uid() });
+      if (error) {
+        await state.sb.storage.from('papers').remove([path]);
+        input.disabled = false;
+        status.textContent = '';
+        toast(friendlyError(error), true);
+        return;
+      }
+      await loadTable('paper_files');
+      toast('PDF shared with the other readers.');
+      rerender();
+    });
+    return h('section', { class: 'stack', id: 'dlg-files' },
+      h('h3', {}, 'Full text shared by readers'),
+      files.length ? h('ul', { class: 'list-plain' }, files.map((f) => h('li', { class: 'row' },
+        h('button', { class: 'btn btn-secondary btn-small', type: 'button', onclick: () => openStored('papers', f.storage_path) }, `Open ${f.file_name}`),
+        h('span', { class: 'small muted' }, `${fileSize(f.size_bytes || 0)} · shared by ${f.uploaded_by === uid() ? 'you' : readerName(f.uploaded_by)}`),
+        f.uploaded_by === uid() ? h('button', {
+          class: 'btn btn-quiet btn-small', type: 'button',
+          onclick: async () => {
+            if (!confirm('Remove this PDF for everyone?')) return;
+            const { data, error } = await state.sb.from('paper_files').delete().eq('id', f.id).select('id');
+            if (error || !data.length) { toast(error ? friendlyError(error) : 'Could not remove it.', true); return; }
+            await state.sb.storage.from('papers').remove([f.storage_path]);
+            await loadTable('paper_files');
+            toast('PDF removed.');
+            rerender();
+          },
+        }, 'Remove') : null)))
+        : h('p', { class: 'small muted' }, p.is_oa ? 'None needed so far: this paper is free to read online.' : 'No PDF shared yet. If you have access, upload it so the other readers (and the AI drafting) can use the full text.'),
+      h('div', { class: 'row' }, h('label', { class: 'small' }, 'Upload the PDF: ', input), status),
+      h('p', { class: 'small muted' }, 'Shared PDFs can be opened by everyone signed in to the tracker.'));
   }
 
   /* ---------- paper dialog ---------- */
@@ -923,13 +1546,15 @@
       h('section', { class: 'stack', id: 'dlg-others' },
         h('h3', {}, `Other readers' notes (${others.length})`),
         others.length ? others.map(noteCard) : h('p', { class: 'muted small' }, 'None yet.')),
+      filesPart(p),
     ];
   }
 
   function refreshDialogLive() {
     const p = paperById(state.openPaperId);
-    const [readers, others] = liveParts(p);
+    const [readers, others, files] = liveParts(p);
     document.getElementById('dlg-readers').replaceWith(readers);
+    document.getElementById('dlg-files').replaceWith(files);
     document.getElementById('dlg-others').replaceWith(others);
   }
 
@@ -940,7 +1565,7 @@
     const freeUrl = safeHref(p.oa_url);
     const pdfUrl = safeHref(p.pdf_url);
     const adder = p.added_by ? (p.added_by === uid() ? 'you' : readerName(p.added_by)) : null;
-    const [readers, others] = liveParts(p);
+    const [readers, others, files] = liveParts(p);
     dialog.replaceChildren(
       h('div', { class: 'dialog-head' },
         h('div', { class: 'row' }, p.rank ? h('strong', {}, `#${p.rank}`) : null, tagPill(p), accessBadge(p),
@@ -960,12 +1585,14 @@
               h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => editPaper(p.id) }, 'Edit'),
               h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => removePaper(p) }, 'Remove'),
             ] : null) : null,
-          !p.is_oa ? h('p', { class: 'muted small' }, 'Paywalled: open it through your own library or institutional access. Please don\'t share PDFs of paywalled papers here.') : null),
+          !p.is_oa ? h('p', { class: 'muted small' }, 'Paywalled: open it through your library access, or use a PDF another reader has shared below.') : null),
         p.why_read ? h('div', { class: 'callout callout-info' }, h('strong', {}, 'Why read it: '), p.why_read) : null,
         flag || (p.check_notes && p.check_notes.length) ? h('div', { class: 'callout' },
           flag ? h('p', {}, h('strong', {}, `${flag[0]}: `), flag[1]) : null,
           p.check_notes && p.check_notes.length ? [h('strong', {}, 'Check before citing'), h('ul', {}, p.check_notes.map((c) => h('li', {}, c)))] : null) : null,
+        draftPart(p),
         readers,
+        files,
         h('section', { class: 'stack' }, h('h3', {}, 'Your note'), noteForm(p)),
         others));
   }
@@ -1026,24 +1653,28 @@
 
   const VIEWS = {
     overview: renderOverview, papers: renderPapers, mine: renderMine, add: renderAdd, suggest: renderAdd,
-    materials: renderMaterials, profile: () => renderProfile(true),
+    materials: renderMaterials, profile: () => renderProfile(true), chapter: renderChapter,
   };
 
   // On live updates these views refresh their lists only, so nobody loses what they are typing
-  const LIVE_REDRAW = { papers: () => drawList(), materials: () => drawMaterials(), add: () => {}, suggest: () => {}, profile: () => {} };
+  const LIVE_REDRAW = {
+    papers: () => drawList(), materials: () => drawMaterials(), add: () => {}, suggest: () => {}, profile: () => {},
+    chapter: (section, sub) => { if (!(state.editing && state.editing.section === Number(section) && !sub)) renderChapter(section, sub); },
+  };
 
   function route(live) {
     if (!state.session || !state.me) return;
     const view = currentView();
-    if (live === true && app.dataset.view === view && LIVE_REDRAW[view]) { LIVE_REDRAW[view](); return; }
-    const render = VIEWS[view] || renderOverview;
-    if (view !== 'add') state.editPaperId = null;
+    const [name, ...args] = view.split('/');
+    if (live === true && app.dataset.view === view && LIVE_REDRAW[name]) { LIVE_REDRAW[name](...args); return; }
+    const render = VIEWS[name] || renderOverview;
+    if (name !== 'add') state.editPaperId = null;
     document.querySelectorAll('#nav a').forEach((a) => {
-      if (a.dataset.view === view) a.setAttribute('aria-current', 'page');
+      if (a.dataset.view === name) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
     const y = window.scrollY;
-    render();
+    render(...args);
     if (live === true) window.scrollTo(0, y);
   }
 

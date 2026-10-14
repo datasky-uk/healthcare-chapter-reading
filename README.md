@@ -1,12 +1,12 @@
 # Chapter reading tracker
 
-A shared web page where the chapter's co-readers claim papers, write structured notes, add papers the list is missing and share documents. Each essential read gets two readers, and every other paper gets one. The page runs on GitHub Pages and stores its data in Supabase (free tier). Collaborators sign in with a one-time link emailed to them, so they need no passwords and no accounts elsewhere.
+A shared web page where the chapter's co-readers claim papers, write structured notes, add papers the list is missing and share documents. They also check the AI draft's claims, and edit and approve the chapter section by section. Each essential read gets two readers, and every other paper gets one. The page runs on GitHub Pages and stores its data in Supabase (free tier). Collaborators sign in with a one-time link emailed to them, so they need no passwords and no accounts elsewhere.
 
 ## Set up (once)
 
 1. **Supabase.**
    - Create a free project at supabase.com.
-   - In *SQL Editor*, paste and run `supabase/schema.sql`, then `supabase/002_added_papers_and_materials.sql`. Both are safe to re-run.
+   - In *SQL Editor*, paste and run `supabase/schema.sql`, then `supabase/002_added_papers_and_materials.sql`, then `supabase/003_drafting.sql`. All three are safe to re-run.
    - In *Authentication → Sign In / Providers*, turn **off** "Allow new users to sign up", so only invited people can sign in.
    - In *Authentication → URL Configuration*, set the Site URL to the tracker address from step 3 and add it to the redirect URLs.
    - **Set up email delivery.** Supabase's built-in sender only delivers to your own project team's addresses, and only a few emails an hour, so it can't reach external collaborators. In *Authentication → Emails → SMTP Settings*, connect a sending service. Your institution's SMTP server works, or a free tier from Resend or Brevo. Then raise the email limit in *Authentication → Rate Limits*.
@@ -55,15 +55,35 @@ A shared web page where the chapter's co-readers claim papers, write structured 
     ```
     Uploading a file with the same name again replaces it.
 
+## Writing the chapter
+
+The AI steps are run on request in Claude Code. The readers' steps happen on the page. The tracker's *stage* decides which actions are open.
+
+| Stage | Who | What happens |
+|---|---|---|
+| `reading` | readers | Claim papers and take notes. |
+| (AI step 1–2) | AI | Writes §2–§8 in `../chapter/draft/s2.md`…`s8.md`, with citation keys like `[@s3-han-r-2024, e370]`. Writes `claims.json`, one to three claims per citation, each anchored to its sentence and marked as drafted from the full text or the abstract. Then `push_draft.py --stage claim_review`. |
+| `claim_review` | readers | Open their papers. Under *In the draft*, mark each claim supported, needs change or not supported (with page, suggested wording and comment). Add claims, then approve, approve with additions or reject the paper. |
+| (AI step 4) | AI | `export_feedback.py` gathers the feedback and the conflicts for the chapter lead. The AI rebuilds the sections, marks claims `addressed` or `dropped` in `claims.json`, then runs `push_draft.py --note "..." --stage section_review`. |
+| `section_review` | readers | On the *Chapter* tab, edit the text and approve. A section needs two approvals of its latest version, and every edit makes a new version, so approvals start again. History shows the changes word by word. |
+| (AI step 6) | AI | `pull_sections.py`, then the AI writes §1 and §9, pushes them, and runs `build_docx.py --upload`. This produces Word footnotes in OSCOLA, checks the 6,000-word limit and puts the file on the Materials page. Then `push_draft.py --stage final`. |
+
+- **Footnotes are generated, never typed.** They are numbered across the chapter: the full OSCOLA form first, then the short form with "(n X)", then "ibid". The forms come from `data/oscola.json`, written by `oscola.py`.
+- **Word counts** include the abstract, headings and footnotes, as the publisher counts them. The page and `build_docx.py` use the same rule.
+- **Checking progress:** `push_draft.py --status` shows the word counts and approvals.
+- **Publisher's Word template:** if there is one, use `build_docx.py --reference template.docx`.
+
 ## Full texts
 
 - **Finding free copies:** `oa_lookup.py` looks for a legal free copy of each paper using OpenAlex, Europe PMC and preprint servers.
 - **Downloading:** `download_oa.py` saves the open-access PDFs to `../papers/` for personal use, with an `INDEX.md`. That folder is never published.
-- **Paywalled papers:** these only link to the publisher. Readers use their own library access, and nobody shares those PDFs in the tracker.
+- **Paywalled papers:** readers can upload the PDF on the paper itself. Every signed-in reader can then open it. Licences usually limit sharing to the subscribing institution, so responsibility for each upload rests with the reader who uploads it.
+  - Files sit in the private `papers` bucket and open through links that expire after 10 minutes.
+  - `pull_paper_files.py` copies them to `../papers/` so the drafting can use the full text.
 
 ## Data and privacy
 
-- The tracker stores readers' names, institutions, email addresses (held by Supabase Auth), claims, notes, the papers they add and the files they share.
+- The tracker stores readers' names, institutions, email addresses (held by Supabase Auth), claims, notes, the papers they add, the files and PDFs they share, their checks of the draft's claims, their decisions on papers, their edits and their approvals.
 - Only signed-in, invited readers can see any of it. Each reader can change only their own claims and notes.
 - The bibliography papers can be changed only with the service key. Readers can change only the papers they added and the materials they shared.
 - **DOI lookups:** when a reader looks up a DOI, their browser sends that DOI to OpenAlex and Crossref, which are public bibliographic databases. Nothing else is sent.

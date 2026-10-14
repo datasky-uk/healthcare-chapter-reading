@@ -8,8 +8,13 @@ COLUMNS = ("id", "section", "section_title", "rank", "tag", "short_cite", "why_r
            "citation", "doi", "url", "is_oa", "oa_status", "oa_url", "pdf_url", "verify_flag", "check_notes")
 
 
-def row(paper):
+OSCOLA = ROOT / "data" / "oscola.json"
+
+
+def row(paper, oscola):
     out = {c: paper.get(c) for c in COLUMNS}
+    form = oscola.get(paper["id"]) or {}
+    out["oscola"], out["oscola_short"] = form.get("full"), form.get("short")
     # Prefer the full registered title where ours is a shortened form of it
     if paper.get("registered_title") and paper.get("title_match") is not None:
         out["title"] = paper["registered_title"]
@@ -23,7 +28,8 @@ def row(paper):
 def main():
     env = load_env()
     papers = json.loads((ROOT / "data" / "references.json").read_text(encoding="utf-8"))
-    rows = [row(p) for p in papers]
+    oscola = json.loads(OSCOLA.read_text(encoding="utf-8")) if OSCOLA.exists() else {}
+    rows = [row(p, oscola) for p in papers]
     status, added = request(env, "GET", "/rest/v1/papers?select=id,doi&added_by=not.is.null")
     if status >= 300:
         sys.exit(f"could not list papers added by readers ({status}): {added}")

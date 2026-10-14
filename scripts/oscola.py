@@ -73,6 +73,27 @@ MANUAL = {
     "s8-world-health-organizatio-2024": "World Health Organization, *Ethics and Governance of Artificial Intelligence for Health: Guidance on Large Multi-Modal Models* (WHO 2024) <https://www.who.int/publications/i/item/9789240084759> " + ACCESSED + ".",
 }
 
+# Short forms for later footnotes ("Topol (n 3)") where the author list doesn't give one
+SHORT = {
+    "s2-stanford-hai-2026": "Stanford HAI, *AI Index Report 2026*",
+    "s3-us-fda-artificial-intell-nd": "FDA, 'AI-Enabled Medical Devices'",
+    "s4-american-medical-associa-2026": "American Medical Association",
+    "s5-royal-swedish-academy-of-2024": "Royal Swedish Academy of Sciences",
+    "s5-ema-chmp-2022": "EMA, *PROCOVA Qualification Opinion*",
+    "s5-us-fda-2025": "FDA, *AI to Support Regulatory Decision-Making*",
+    "s6-national-library-of-medi-nd": "National Library of Medicine",
+    "s8-joint-commission-coaliti-2025": "Joint Commission and CHAI",
+    "s8-regulation-nd": "AI Act",
+    "s6-open-science-collaborati-2015": "Open Science Collaboration",
+    "s8-chart-collaborative-2025": "CHART Collaborative",
+    "s8-regulation-nd-2": "Regulation (EU) 2026/1744",
+    "s8-mdcg-2025-6-ai-board-2025": "MDCG 2025-6",
+    "s8-us-fda-2024": "FDA, *PCCP Guidance*",
+    "s8-us-fda-2025": "FDA, *AI-Enabled Device Software Functions*",
+    "s8-us-fda-2026": "FDA, *Clinical Decision Support Software*",
+    "s8-world-health-organizatio-2024": "WHO, *Guidance on Large Multi-Modal Models*",
+}
+
 # Notes on specific footnotes (in addition to the verification flags)
 NOTES = {
     "s8-regulation-nd-2": "Confirm the full title and date against the Official Journal before citing.",
@@ -210,6 +231,41 @@ def from_crossref(meta, doi, citation):
     return f"{head} [{year}] {journal} {link}."  # online first: no volume or pages yet
 
 
+def surnames(full):
+    """Short author form from the full footnote: 'A', 'A and B', 'A, B and C' or 'A and others'."""
+    head = full.split(", '", 1)[0] if ", '" in full else full.split(", *", 1)[0]
+    others = head.endswith(" and others")
+    head = head.removesuffix(" and others")
+    people = re.split(r", | and ", head)
+    last = [re.sub(r"^(?:.*? )??((?:(?:van|de|von|der|den|la|le) )*\S+)$", r"\1", x, flags=re.I) for x in people]
+    if others:
+        return f"{last[0]} and others"
+    return last[0] if len(last) == 1 else f"{', '.join(last[:-1])} and {last[-1]}"
+
+
+def short_title(full):
+    match = re.search(r"'([^']+)'", full) or re.search(r"\*([^*]+)\*", full)
+    title = match.group(1).split(":")[0] if match else ""
+    cut = title.split()
+    return " ".join(cut[:5]) + ("…" if len(cut) > 5 else "")
+
+
+def short_forms(forms):
+    """OSCOLA short forms; where two sources share one, add a short title to tell them apart."""
+    base = {pid: SHORT.get(pid) or surnames(full) for pid, full in forms.items()}
+    seen = {}
+    for pid, short in base.items():
+        seen.setdefault(short, []).append(pid)
+    out = {}
+    for pid, short in base.items():
+        if len(seen[short]) > 1 and pid not in SHORT:
+            title = short_title(forms[pid])
+            out[pid] = f"{short}, '{title}'" if title else short
+        else:
+            out[pid] = short
+    return out
+
+
 def words(text):
     return len(text.replace("*", "").split())
 
@@ -307,7 +363,9 @@ def main():
             lines += entry(p)
         lines.append("")
     OUT_MD.write_text("\n".join(lines), encoding="utf-8")
-    OUT_JSON.write_text(json.dumps(forms, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    shorts = short_forms(forms)
+    OUT_JSON.write_text(json.dumps({pid: {"full": forms[pid], "short": shorts[pid]} for pid in forms},
+                                   indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {OUT_MD} ({len(forms)} references; {len(planned_ids)} planned = {planned_words} words)")
 
 
