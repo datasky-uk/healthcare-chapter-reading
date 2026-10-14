@@ -3,3 +3,4 @@ data/oa_cache.json
 data/download_log.json
 __pycache__/
 web/config.local.js
+data/crossref_cache.json

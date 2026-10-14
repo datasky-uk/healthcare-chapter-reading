@@ -7,10 +7,10 @@
   const dialog = document.getElementById('paper-dialog');
 
   const SECTIONS = {
-    1: 'Introduction', 2: 'Technological foundations', 3: 'Diagnostics',
+    1: 'Introduction and approach', 2: 'Technological foundations', 3: 'Diagnostics',
     4: 'Decision support, workflow and operations', 5: 'Biomedical research and drug discovery',
     6: 'AI and the expanding literature', 7: 'Emerging models of evidence synthesis',
-    8: 'Bias, safety and governance', 9: 'Future directions',
+    8: 'Bias, safety and governance', 9: 'Conclusions and future directions',
   };
   const TAGS = {
     essential: { label: 'Essential read', need: 2 },

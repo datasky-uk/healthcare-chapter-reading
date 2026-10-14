@@ -32,6 +32,9 @@ A shared web page where the chapter's co-readers claim papers, write structured 
 
 - `python3 scripts/export_notes.py` writes every note to `../notes_export.md`, grouped by chapter section. Readers can also download notes as Markdown or CSV from the page.
 - **Adding a paper:** add it to `../chapter_outline_and_literature.md`, then run `build_references.py`, `oa_lookup.py` and `seed.py`.
+- **OSCOLA footnotes:** `python3 scripts/oscola.py --fetch` writes `../oscola_references.md`. The chapter uses OSCOLA footnotes with no bibliography, so the file gives the first-citation footnote for every reference, with the planned citations first and each one's word count. The publisher's 5,000–6,000-word limit includes references.
+  - The citation plan is the `PLANNED` list in the script.
+  - References without a Crossref record have hand-written forms in `MANUAL`.
   - Existing papers keep their ids, matched by DOI or citation, so claims and notes stay attached.
   - `seed.py` removes papers dropped from the bibliography, but only if nobody has claimed or noted them. It warns about the rest.
 - **Papers added by readers:** any reader can add a paper from *Add a paper*. Pasting a DOI fills in the details from OpenAlex or Crossref. The paper then appears in everyone's list, marked "added".
