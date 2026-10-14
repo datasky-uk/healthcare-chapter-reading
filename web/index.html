@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter Reading Tracker</title>
+<meta name="description" content="Shared reading tracker for the chapter on AI in healthcare">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/overview">
+      <span class="brand-eyebrow">AI in Healthcare · chapter</span>
+      <span class="brand-name">Reading tracker</span>
+    </a>
+    <nav id="nav" class="nav" hidden>
+      <a href="#/overview" data-view="overview">Overview</a>
+      <a href="#/papers" data-view="papers">Papers</a>
+      <a href="#/mine" data-view="mine">My reading</a>
+      <a href="#/suggest" data-view="suggest">Suggest</a>
+    </nav>
+    <div id="account" class="account" hidden>
+      <a id="me-link" href="#/profile" class="me-link"></a>
+      <button id="sign-out" class="btn btn-quiet" type="button">Sign out</button>
+    </div>
+  </div>
+</header>
+<main id="app" class="container" tabindex="-1">
+  <p class="muted">Loading…</p>
+</main>
+<dialog id="paper-dialog" class="paper-dialog" aria-labelledby="dialog-title"></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="vendor/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
