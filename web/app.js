@@ -939,6 +939,24 @@
     return text.split(/(\*[^*]+\*)/).filter(Boolean).map((part) => (/^\*[^*]+\*$/.test(part) ? h('em', {}, part.slice(1, -1)) : part));
   }
 
+  // Paragraphs (separated by blank lines) with their offsets in the text; headings are flagged
+  function paragraphsOf(body) {
+    const out = [];
+    const re = /\n[ \t]*\n/g;
+    let pos = 0;
+    let m;
+    const chunks = [];
+    while ((m = re.exec(body)) !== null) { chunks.push([pos, body.slice(pos, m.index)]); pos = m.index + m[0].length; }
+    chunks.push([pos, body.slice(pos)]);
+    for (const [start, raw] of chunks) {
+      const text = raw.trimStart();
+      if (!text.trim()) continue;
+      const offset = start + raw.length - text.length;
+      out.push({ start: offset, end: offset + text.trimEnd().length, text: text.trimEnd(), heading: /^#{2,4}\s+/.test(text) });
+    }
+    return out;
+  }
+
   // Our Markdown subset as DOM nodes, never HTML: paragraphs, ## and ### headings, *italic*, **bold**,
   // and citation keys as footnote numbers. Claim anchors found in the text are highlighted.
   function renderText(body, opts) {
@@ -975,7 +993,8 @@
         const abs = base + m.index;
         if (tok.startsWith('[@')) {
           const note = noteAt.get(abs);
-          const sup = h('sup', { class: 'fn', title: note ? note.text.replace(/\*/g, '') : '' }, note ? String(note.n) : '*');
+          const own = note && o.highlightKeys && note.keys.some((k) => o.highlightKeys.includes(k));
+          const sup = h('sup', { class: own ? 'fn fn-this' : 'fn', title: note ? note.text.replace(/\*/g, '') : '' }, note ? String(note.n) : '*');
           const r = claimAt(abs);
           parent.append(r ? mark(r.claim, sup) : sup);
         } else {
@@ -988,23 +1007,12 @@
       }
       if (last < text.length) emit(parent, text.slice(last), base + last);
     };
-    const blocks = [];
-    const re = /\n[ \t]*\n/g;
-    let pos = 0;
-    let m;
-    const chunks = [];
-    while ((m = re.exec(body)) !== null) { chunks.push([pos, body.slice(pos, m.index)]); pos = m.index + m[0].length; }
-    chunks.push([pos, body.slice(pos)]);
-    for (const [start, raw] of chunks) {
-      const text = raw.trimStart();
-      if (!text.trim()) continue;
-      const offset = start + raw.length - text.length;
+    return paragraphsOf(body).map(({ start, text }) => {
       const head = text.match(/^(#{2,4})\s+/);
       const el = head ? h(head[1].length <= 2 ? 'h3' : 'h4', { class: 'chapter-sub' }) : h('p');
-      inline(el, text.slice(head ? head[0].length : 0).trimEnd(), offset + (head ? head[0].length : 0));
-      blocks.push(el);
-    }
-    return blocks;
+      inline(el, text.slice(head ? head[0].length : 0), start + (head ? head[0].length : 0));
+      return el;
+    });
   }
 
   // Word-level differences between two versions
@@ -1245,6 +1253,35 @@
   }
 
   /* ---------- claims and PDFs in the paper dialog ---------- */
+
+  // Every paragraph of the current draft that cites this paper, with its footnotes, so readers can check the context
+  function usedPart(p) {
+    if (!state.section_versions.length) return h('section', { id: 'dlg-used', hidden: true });
+    const counts = chapterCounts();
+    const claims = claimsOfPaper(p.id).filter((c) => c.anchor);
+    const uses = [];
+    for (let s = 1; s <= 9; s += 1) {
+      const v = latestVersion(s);
+      if (!v) continue;
+      const notes = counts.notes[s] || [];
+      let number = 0;
+      for (const para of paragraphsOf(v.body)) {
+        if (!para.heading) number += 1;
+        const inside = notes.filter((x) => x.start >= para.start && x.end <= para.end);
+        if (!inside.some((x) => x.keys.includes(p.id))) continue;
+        uses.push({ s, v, number, para, notes: inside.map((x) => ({ ...x, start: x.start - para.start, end: x.end - para.start })) });
+      }
+    }
+    return h('section', { class: 'stack', id: 'dlg-used' },
+      h('h3', {}, `Where it is used${uses.length ? ` (${plural(uses.length, 'paragraph')})` : ''}`),
+      uses.length ? uses.map((u) => h('article', { class: 'used-card' },
+        h('div', { class: 'row' },
+          h('span', { class: 'small muted' }, `§${u.s} ${sectionInfo(u.s).title} · paragraph ${u.number} · version ${u.v.version}`),
+          h('a', { class: 'small', href: `#/chapter/${u.s}`, onclick: () => dialog.close() }, `Open §${u.s}`)),
+        h('div', { class: 'chapter-text used-text' }, renderText(u.para.text, { notes: u.notes, claims, highlightKeys: [p.id] })),
+        h('ol', { class: 'footnotes' }, u.notes.map((x) => h('li', { value: String(x.n), class: x.keys.includes(p.id) ? 'fn-this' : null }, italics(x.text))))))
+        : h('p', { class: 'muted small' }, 'Not cited in the current draft.'));
+  }
 
   async function saveReview(claim, row) {
     const { error } = await state.sb.from('claim_reviews').upsert({ claim_id: claim.id, user_id: uid(), ...row });
@@ -1555,6 +1592,7 @@
     const [readers, others, files] = liveParts(p);
     document.getElementById('dlg-readers').replaceWith(readers);
     document.getElementById('dlg-files').replaceWith(files);
+    document.getElementById('dlg-used').replaceWith(usedPart(p));
     document.getElementById('dlg-others').replaceWith(others);
   }
 
@@ -1587,6 +1625,7 @@
             ] : null) : null,
           !p.is_oa ? h('p', { class: 'muted small' }, 'Paywalled: open it through your library access, or use a PDF another reader has shared below.') : null),
         p.why_read ? h('div', { class: 'callout callout-info' }, h('strong', {}, 'Why read it: '), p.why_read) : null,
+        usedPart(p),
         flag || (p.check_notes && p.check_notes.length) ? h('div', { class: 'callout' },
           flag ? h('p', {}, h('strong', {}, `${flag[0]}: `), flag[1]) : null,
           p.check_notes && p.check_notes.length ? [h('strong', {}, 'Check before citing'), h('ul', {}, p.check_notes.map((c) => h('li', {}, c)))] : null) : null,

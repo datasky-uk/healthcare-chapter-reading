@@ -265,3 +265,9 @@ ol.footnotes li { margin-bottom: 4px; }
 .verdict-not_supported[aria-pressed="true"], .verdict-reject[aria-pressed="true"] { background: #9F1239; border-color: #9F1239; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .verdict[aria-pressed="true"] { color: #0F1729; } }
 .decision h4, #dlg-draft h4 { margin: 0; color: var(--ink); }
+.used-card { border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0; padding: 10px 14px; background: var(--bg); display: flex; flex-direction: column; gap: 6px; }
+.used-text { font-size: 1rem; }
+.used-text p { margin: 0; }
+.used-card ol.footnotes { margin-top: 4px; padding-top: 8px; }
+sup.fn-this { background: var(--accent); color: var(--surface); border-radius: 3px; padding: 0 3px; }
+ol.footnotes li.fn-this { color: var(--ink); font-weight: 500; }
