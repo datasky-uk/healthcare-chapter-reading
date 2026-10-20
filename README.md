@@ -6,11 +6,17 @@ A shared web page where the chapter's co-readers claim papers, write structured 
 
 1. **Supabase.**
    - Create a free project at supabase.com.
-   - In *SQL Editor*, paste and run `supabase/schema.sql`, then `supabase/002_added_papers_and_materials.sql`, then `supabase/003_drafting.sql`. All three are safe to re-run.
+   - In *SQL Editor*, paste and run `supabase/schema.sql`, then `supabase/002_added_papers_and_materials.sql`, then `supabase/003_drafting.sql`, then `supabase/004_members_and_invites.sql`. All four are safe to re-run.
    - In *Authentication → Sign In / Providers*, turn **off** "Allow new users to sign up", so only invited people can sign in.
    - In *Authentication → URL Configuration*, set the Site URL to the tracker address from step 3 and add it to the redirect URLs.
    - **Set up email delivery.** Supabase's built-in sender only delivers to your own project team's addresses, and only a few emails an hour, so it can't reach external collaborators. In *Authentication → Emails → SMTP Settings*, connect a sending service. Your institution's SMTP server works, or a free tier from Resend or Brevo. Then raise the email limit in *Authentication → Rate Limits*.
    - Leave the *Email* provider itself **enabled**. Only the sign-up switch above should be off; turning off the provider blocks every sign-in link.
+   - **Deploy the invite function** so readers can invite people from the page. It holds the service key, which must never reach the browser.
+     ```
+     npx supabase login
+     npx supabase functions deploy invite --project-ref YOUR-PROJECT-REF
+     ```
+     Or, in the dashboard, open *Edge Functions → Deploy a new function → Via editor*, name it `invite`, and paste in `supabase/functions/invite/index.ts`. Either way, keep "Verify JWT" on.
 2. **Local settings.**
    - Run `cp .env.example .env`.
    - Fill in the project URL and keys from *Project Settings → API*, plus `SITE_URL`.
@@ -23,12 +29,17 @@ A shared web page where the chapter's co-readers claim papers, write structured 
    ```
    In the GitHub repo, set *Settings → Pages → Source* to "GitHub Actions".
 4. **Add the chapter documents** to the *Materials* page (see below).
-5. **Invite people.**
+5. **Invite people.** Use the *Members* page, or:
    ```
    python3 scripts/invite.py alice@uni.edu bob@inst.org
    ```
 
 ## Day to day
+
+- **Members:** the *Members* page lists everyone who has joined and everyone invited who hasn't signed in yet. Any reader can invite people there, or send a fresh link to someone who hasn't joined.
+  - Invitations go through the `invite` Edge Function. It checks that the sender is a signed-in reader, sends at most 20 new invitations per reader a day, and waits 10 minutes before sending another link to the same address.
+  - Inviting someone who has already joined sends nothing.
+  - `invite.py` lists its invitations on the page too, as sent by the chapter lead.
 
 - `python3 scripts/export_notes.py` writes every note to `../notes_export.md`, grouped by chapter section. Readers can also download notes as Markdown or CSV from the page.
 - **Adding a paper:** add it to `../chapter_outline_and_literature.md`, then run `build_references.py`, `oa_lookup.py` and `seed.py`.
@@ -84,6 +95,6 @@ The AI steps are run on request in Claude Code. The readers' steps happen on the
 ## Data and privacy
 
 - The tracker stores readers' names, institutions, email addresses (held by Supabase Auth), claims, notes, the papers they add, the files and PDFs they share, their checks of the draft's claims, their decisions on papers, their edits and their approvals.
-- Only signed-in, invited readers can see any of it. Each reader can change only their own claims and notes.
+- Only signed-in, invited readers can see any of it. That includes the Members page, which shows the email addresses of everyone invited. Each reader can change only their own claims and notes.
 - The bibliography papers can be changed only with the service key. Readers can change only the papers they added and the materials they shared.
 - **DOI lookups:** when a reader looks up a DOI, their browser sends that DOI to OpenAlex and Crossref, which are public bibliographic databases. Nothing else is sent.

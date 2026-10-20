@@ -33,7 +33,7 @@
     sb: null, session: null, me: null,
     papers: [], claims: [], notes: [], readers: [], materials: [],
     chapter_state: [], chapter_sections: [], section_versions: [], draft_claims: [], claim_reviews: [],
-    paper_reviews: [], section_approvals: [], paper_files: [], editing: null,
+    paper_reviews: [], section_approvals: [], paper_files: [], invites: [], editing: null,
     filters: { q: '', section: '', tag: 'ranked', status: '', access: '' },
     openPaperId: null, editPaperId: null, channel: null,
   };
@@ -115,7 +115,7 @@
   /* ---------- data ---------- */
 
   const TABLES = ['papers', 'claims', 'notes', 'readers', 'materials', 'chapter_state', 'chapter_sections', 'section_versions',
-    'draft_claims', 'claim_reviews', 'paper_reviews', 'section_approvals', 'paper_files'];
+    'draft_claims', 'claim_reviews', 'paper_reviews', 'section_approvals', 'paper_files', 'invites'];
 
   async function loadTable(table) {
     const { data, error } = await state.sb.from(table).select('*');
@@ -272,7 +272,7 @@
         if (error) {
           button.disabled = false;
           message.textContent = /signup|not allowed|not found/i.test(error.message)
-            ? `That address hasn't been invited yet. Ask ${cfg.contact || 'the chapter lead'} to add you.`
+            ? `That address hasn't been invited yet. Ask ${cfg.contact || 'the chapter lead'}, or anyone already on the tracker, to invite you.`
             : friendlyError(error);
           return;
         }
@@ -836,6 +836,106 @@
       h('section', { class: 'stack' }, sharedHeading = h('h2'), sharedHost = h('div')),
       form));
     drawMaterials();
+  }
+
+  /* ---------- members and invitations ---------- */
+
+  function isMember(id) { return Boolean(id && state.readers.some((r) => r.user_id === id)); }
+  function inviterName(id) { return id === uid() ? 'you' : id ? readerName(id) : cfg.contact || 'the chapter lead'; }
+
+  // The "invite" Edge Function sends the email, since inviting needs the service key
+  async function sendInvite(email) {
+    const { data, error } = await state.sb.functions.invoke('invite', { body: { email } });
+    if (!error) return data;
+    let message = friendlyError(error);
+    try { message = (await error.context.json()).message || message; } catch (e) { /* no JSON reply */ }
+    return { status: 'error', message };
+  }
+
+  function memberRow(r) {
+    const invite = state.invites.find((i) => i.user_id === r.user_id);
+    const meta = [`joined ${new Date(r.created_at).toLocaleDateString()}`,
+      invite ? `invited by ${inviterName(invite.invited_by)}` : null].filter(Boolean).join(' · ');
+    return h('article', { class: 'material-row' },
+      h('div', { class: 'material-main' },
+        h('h3', {}, r.display_name, r.user_id === uid() ? h('span', { class: 'muted' }, ' (you)') : null),
+        r.affiliation ? h('p', { class: 'small' }, r.affiliation) : null,
+        h('p', { class: 'paper-meta' }, meta)));
+  }
+
+  function pendingRow(i) {
+    const button = h('button', {
+      class: 'btn btn-quiet btn-small', type: 'button',
+      onclick: async () => {
+        button.disabled = true;
+        const result = await sendInvite(i.email);
+        button.disabled = false;
+        toast(result.message, result.status === 'error');
+        await loadTable('invites');
+        drawMembers();
+      },
+    }, 'Send again');
+    return h('article', { class: 'material-row' },
+      h('div', { class: 'material-main' },
+        h('h3', {}, i.email),
+        h('p', { class: 'paper-meta' }, `invited by ${inviterName(i.invited_by)} · last emailed ${new Date(i.last_sent_at).toLocaleDateString()}`)),
+      button);
+  }
+
+  let membersHost, pendingHost, membersHeading, pendingHeading;
+  function drawMembers() {
+    const members = [...state.readers].sort((a, b) => a.display_name.localeCompare(b.display_name));
+    const pending = state.invites.filter((i) => !isMember(i.user_id))
+      .sort((a, b) => b.last_sent_at.localeCompare(a.last_sent_at));
+    membersHeading.textContent = `Members (${members.length})`;
+    membersHost.replaceChildren(h('div', { class: 'paper-list' }, members.map(memberRow)));
+    pendingHeading.textContent = `Invited, not joined yet (${pending.length})`;
+    pendingHost.replaceChildren(pending.length ? h('div', { class: 'paper-list' }, pending.map(pendingRow))
+      : h('p', { class: 'empty' }, 'Everyone invited has joined.'));
+  }
+
+  function renderMembers() {
+    const emails = h('textarea', { id: 'i-emails', rows: 2, required: true, placeholder: 'colleague@university.edu, other@institute.org' });
+    const button = h('button', { class: 'btn', type: 'submit' }, 'Send invitations');
+    const results = h('ul', { class: 'list-plain small', role: 'status' });
+    const form = h('form', {
+      class: 'card stack',
+      onsubmit: async (e) => {
+        e.preventDefault();
+        const list = [...new Set(emails.value.split(/[\s,;]+/).map((x) => x.trim().toLowerCase()).filter(Boolean))];
+        if (!list.length) return;
+        button.disabled = true;
+        results.replaceChildren();
+        const failed = [];
+        for (const email of list) {
+          const line = h('li', {}, `${email}: sending…`);
+          results.append(line);
+          const result = await sendInvite(email);
+          line.textContent = result.message;
+          line.className = result.status === 'error' ? 'over' : result.status === 'member' ? 'muted' : 'ok';
+          if (result.status === 'error') failed.push(email);
+        }
+        emails.value = failed.join(', '); // keep only the ones to retry
+        button.disabled = false;
+        await loadTable('invites');
+        drawMembers();
+      },
+    },
+    h('h2', {}, 'Invite people'),
+    h('p', { class: 'muted small' }, 'They get an email with a link to sign in; no password or account needed. Anyone on the tracker can invite people, and every member can see the list below, including the email addresses of people invited.'),
+    h('div', { class: 'field' }, h('label', { for: 'i-emails' }, 'Email addresses'), emails,
+      h('span', { class: 'hint' }, 'One or more, separated by commas, spaces or new lines.')),
+    h('div', { class: 'row' }, button),
+    results);
+
+    mount(h('div', { class: 'stack-lg' },
+      h('div', { class: 'stack' },
+        h('h1', {}, 'Members'),
+        h('p', { class: 'muted' }, 'Everyone reading and writing the chapter, and the people invited who haven\'t signed in yet.')),
+      form,
+      h('section', { class: 'stack' }, membersHeading = h('h2'), membersHost = h('div')),
+      h('section', { class: 'stack' }, pendingHeading = h('h2'), pendingHost = h('div'))));
+    drawMembers();
   }
 
   /* ---------- writing the chapter ---------- */
@@ -1692,12 +1792,12 @@
 
   const VIEWS = {
     overview: renderOverview, papers: renderPapers, mine: renderMine, add: renderAdd, suggest: renderAdd,
-    materials: renderMaterials, profile: () => renderProfile(true), chapter: renderChapter,
+    materials: renderMaterials, members: renderMembers, profile: () => renderProfile(true), chapter: renderChapter,
   };
 
   // On live updates these views refresh their lists only, so nobody loses what they are typing
   const LIVE_REDRAW = {
-    papers: () => drawList(), materials: () => drawMaterials(), add: () => {}, suggest: () => {}, profile: () => {},
+    papers: () => drawList(), materials: () => drawMaterials(), members: () => drawMembers(), add: () => {}, suggest: () => {}, profile: () => {},
     chapter: (section, sub) => { if (!(state.editing && state.editing.section === Number(section) && !sub)) renderChapter(section, sub); },
   };
 
